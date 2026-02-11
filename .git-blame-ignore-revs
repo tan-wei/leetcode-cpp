@@ -1,0 +1,11 @@
+# style: update clang-format and clang-tidy to 16
+dda8bbf1d6abe08c0ae04f351019309bf0798b15
+
+# style: update to clang-format 15
+a395c9a0a323f43cf1b63a9375a9bb4fba0afdac
+
+# style: change naming convention for constexpr vars
+252ec2feb6e823097daf68e1204bb42549e7499e
+
+# style: reformat .releaserc.js
+d66740230daea5c9b2282fc66e71a24e1ae6ad5b

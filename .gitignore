@@ -1,0 +1,8 @@
+.venv/
+.vs/
+.vscode/
+build/
+coverage/
+node_modules/
+CMakeSettings.json
+CMakeUserPresets.json

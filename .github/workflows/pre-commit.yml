@@ -1,0 +1,22 @@
+name: Pre-commit
+
+on:
+  push:
+    branches:
+
+jobs:
+  pre-commit:
+    name: Check hooks
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Run hooks
+        run: uv run pre-commit run -a

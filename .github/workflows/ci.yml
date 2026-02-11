@@ -1,0 +1,421 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  VSCMD_SKIP_SENDTELEMETRY: 1
+  HOMEBREW_NO_AUTO_UPDATE: 1
+  CMAKE_GENERATOR: Ninja
+
+jobs:
+  build_linux:
+    name: ${{ matrix.config.name }} ${{ matrix.build.type }}
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        build:
+          - {
+              type: Debug,
+              preset: conan-debug
+            }
+          - {
+              type: RelWithDebInfo,
+              preset: conan-relwithdebinfo
+            }
+        config:
+          - {
+              name: 'Linux GCC',
+              cc: gcc-14,
+              cxx: g++-14,
+              gcov: gcov-14,
+              profiles: '-pr:h conan/gcc14'
+            }
+          - {
+              name: 'Linux Clang',
+              cc: clang-18,
+              cxx: clang++-18,
+              gcov: llvm-cov-18 gcov,
+              profiles: '-pr:h conan/clang18 -pr:h conan/libc++'
+            }
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set environment variables
+        run: |
+          echo "/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin" >> ${{ github.path }}
+          echo "CONAN_HOME=${{ runner.temp }}/.conan2" >> ${{ github.env }}
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: |
+          sudo apt install libc++-18-dev libc++abi-18-dev
+          sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          brew install cppcheck
+          uv sync
+          uv run conan profile detect
+
+      - name: Cache Conan packages
+        uses: actions/cache@v5
+        with:
+          path: ${{ env.CONAN_HOME }}/p
+          key: conan-${{ runner.os }}-${{ matrix.config.cc }}-${{ matrix.build.type }}-${{ hashFiles('conanfile.py') }}
+          restore-keys: |
+            conan-${{ runner.os }}-${{ matrix.config.cc }}-${{ matrix.build.type }}-
+            conan-${{ runner.os }}-${{ matrix.config.cc }}-
+            conan-${{ runner.os }}-
+
+      - name: Install Conan packages
+        run: >
+          uv run conan install .
+          -b missing -pr:a default ${{ matrix.config.profiles }}
+          -c:a tools.cmake.cmaketoolchain:generator=Ninja
+          -c:h tools.build:compiler_executables="{\"c\": \"${{ matrix.config.cc }}\", \"cpp\": \"${{ matrix.config.cxx }}\"}"
+          -s:h build_type=${{ matrix.build.type }}
+
+      - name: Configure
+        run: >
+          uv run cmake --preset ${{ matrix.build.preset }}
+          -D ENABLE_COVERAGE:BOOL=${{ matrix.build.type == 'Debug' }}
+          -D ENABLE_ASAN:BOOL=${{ matrix.build.type == 'Debug' }}
+          -D ENABLE_UBSAN:BOOL=${{ matrix.build.type == 'Debug' }}
+          -D ENABLE_LSAN:BOOL=${{ matrix.build.type == 'Debug' }}
+          -D ENABLE_CPPCHECK:BOOL=TRUE
+          -D ENABLE_CLANG_TIDY:BOOL=${{ contains(matrix.config.cc, 'clang') }}
+          -D ENABLE_HARDENINGS:BOOL=TRUE
+          -D ENABLE_FORTIFY_SOURCE:BOOL=${{ matrix.build.type != 'Debug' }}
+
+      - name: Build
+        run: uv run cmake --build --preset ${{ matrix.build.preset }}
+
+      - name: Run tests
+        run: uv run ctest --preset ${{ matrix.build.preset }}
+
+      - name: Collect test coverage
+        if: matrix.build.type == 'Debug'
+        env:
+          GCOV: ${{ matrix.config.gcov }}
+        run: uv run gcovr
+
+  build_macos:
+    name: ${{ matrix.config.name }} ${{ matrix.build.type }}
+    runs-on: macos-26
+    strategy:
+      matrix:
+        build:
+          - {
+              type: Debug,
+              preset: conan-debug
+            }
+          - {
+              type: RelWithDebInfo,
+              preset: conan-relwithdebinfo
+            }
+        config:
+          - {
+              name: 'Macos Clang',
+              cc: $(brew --prefix llvm@21)/bin/clang,
+              cxx: $(brew --prefix llvm@21)/bin/clang++,
+              profiles: '-pr:h conan/clang21 -pr:h conan/libc++'
+            }
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set environment variables
+        run: |
+          echo "CONAN_HOME=${{ runner.temp }}/.conan2" >> ${{ github.env }}
+
+      - name: Force clang to use homebrew libc++
+        run: |
+          mkdir ~/.config/clang
+          echo "-I/opt/homebrew/opt/llvm/include" > ~/.config/clang/clang++.cfg
+          echo "-L/opt/homebrew/opt/llvm/lib/c++" >> ~/.config/clang/clang++.cfg
+          echo "-L/opt/homebrew/opt/llvm/lib/unwind" >> ~/.config/clang/clang++.cfg
+          echo "-lunwind" >> ~/.config/clang/clang++.cfg
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: |
+          brew install llvm@21
+          uv sync
+          uv run conan profile detect
+
+      - name: Cache Conan packages
+        uses: actions/cache@v5
+        with:
+          path: ${{ env.CONAN_HOME }}/p
+          key: conan-${{ runner.os }}-clang-${{ matrix.build.type }}-${{ hashFiles('conanfile.py') }}
+          restore-keys: |
+            conan-${{ runner.os }}-clang-${{ matrix.build.type }}-
+            conan-${{ runner.os }}-clang-
+            conan-${{ runner.os }}-
+
+      - name: Install Conan packages
+        run: >
+          uv run conan install .
+          -b missing -pr:a default ${{ matrix.config.profiles }}
+          -c:a tools.cmake.cmaketoolchain:generator=Ninja
+          -c:h tools.build:compiler_executables="{\"c\": \"${{ matrix.config.cc }}\", \"cpp\": \"${{ matrix.config.cxx }}\"}"
+          -s:h build_type=${{ matrix.build.type }}
+
+      - name: Configure
+        run: >
+          uv run cmake --preset ${{ matrix.build.preset }}
+          -D ENABLE_COVERAGE:BOOL=${{ matrix.build.type == 'Debug' }}
+          -D ENABLE_ASAN:BOOL=${{ matrix.build.type == 'Debug' }}
+          -D ENABLE_UBSAN:BOOL=${{ matrix.build.type == 'Debug' }}
+          -D ENABLE_LSAN:BOOL=${{ matrix.build.type == 'Debug' }}
+          -D ENABLE_HARDENINGS:BOOL=TRUE
+          -D ENABLE_FORTIFY_SOURCE:BOOL=${{ matrix.build.type != 'Debug' }}
+
+      - name: Build
+        run: uv run cmake --build --preset ${{ matrix.build.preset }}
+
+      - name: Run tests
+        run: uv run ctest --preset ${{ matrix.build.preset }}
+
+      - name: Collect test coverage
+        if: matrix.build.type == 'Debug'
+        run: GCOV="$(brew --prefix llvm@21)/bin/llvm-cov gcov" uv run gcovr
+
+  build_windows:
+    name: ${{ matrix.config.name }} ${{ matrix.build.type }}
+    runs-on: windows-2025
+    strategy:
+      matrix:
+        build:
+          - {
+              type: Debug,
+              preset: conan-debug
+            }
+          - {
+              type: RelWithDebInfo,
+              preset: conan-relwithdebinfo
+            }
+        config:
+          - {
+              name: 'Windows MSVC',
+              cc: cl,
+              cxx: cl,
+              profiles: '-pr:h conan/msvc194-md'
+            }
+          - {
+              name: 'Windows Clang',
+              cc: clang,
+              cxx: clang++,
+              profiles: '-pr:h conan/clang20'
+            }
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set environment variables
+        run: |
+          echo "CONAN_HOME=${{ runner.temp }}/.conan2" >> ${{ github.env }}
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: |
+          choco install opencppcoverage
+          uv sync
+          uv run conan profile detect
+
+      - name: Cache Conan packages
+        uses: actions/cache@v5
+        with:
+          path: ${{ env.CONAN_HOME }}/p
+          key: conan-${{ runner.os }}-${{ matrix.config.cc }}-${{ matrix.build.type }}-${{ hashFiles('conanfile.py') }}
+          restore-keys: |
+            conan-${{ runner.os }}-${{ matrix.config.cc }}-${{ matrix.build.type }}-
+            conan-${{ runner.os }}-${{ matrix.config.cc }}-
+            conan-${{ runner.os }}-
+
+      - name: Install Conan packages
+        run: >
+          uv run conan install .
+          -b missing -pr:a default ${{ matrix.config.profiles }}
+          -c:a tools.cmake.cmaketoolchain:generator=Ninja
+          -c:h tools.env.virtualenv:powershell=pwsh
+          -c:h tools.build:compiler_executables="{'c': '${{ matrix.config.cc }}', 'cpp': '${{ matrix.config.cxx }}'}"
+          -s:h build_type=${{ matrix.build.type }}
+
+      - name: Configure
+        run: >
+          build/${{ matrix.build.Type }}/generators/conanbuild.ps1 &&
+          uv run cmake --preset ${{ matrix.build.preset }}
+          -D ENABLE_COVERAGE:BOOL=${{ matrix.build.type == 'Debug' }}
+          -D ENABLE_ASAN:BOOL=${{ matrix.build.type == 'Debug' && matrix.config.cc == 'cl' }}
+          -D ENABLE_HARDENINGS:BOOL=TRUE
+
+      - name: Build
+        run: >
+          build/${{ matrix.build.Type }}/generators/conanbuild.ps1 &&
+          uv run cmake --build --preset ${{ matrix.build.preset }}
+
+      - name: Run tests
+        if: matrix.build.type != 'Debug'
+        run: uv run ctest --preset ${{ matrix.build.preset }}
+
+      - name: Run tests and collect test coverage
+        if: matrix.build.type == 'Debug'
+        run: >
+          build/${{ matrix.build.Type }}/generators/conanbuild.ps1 &&
+          & "C:\Program Files\OpenCppCoverage\OpenCppCoverage.exe" --export_type cobertura:coverage/cobertura.xml --cover_children -- uv run ctest --preset ${{ matrix.build.preset }}
+
+  codeql:
+    name: CodeQL
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        build:
+          - {
+              type: Release,
+              preset: conan-release
+            }
+        config:
+          - {
+              cc: gcc-14,
+              cxx: g++-14,
+              profiles: '-pr:h conan/gcc14'
+            }
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set environment variables
+        run: |
+          echo "CONAN_HOME=${{ runner.temp }}/.conan2" >> ${{ github.env }}
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: cpp
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: |
+          uv sync
+          uv run conan profile detect
+
+      - name: Cache Conan packages
+        uses: actions/cache@v5
+        with:
+          path: ${{ env.CONAN_HOME }}/p
+          key: conan-${{ runner.os }}-${{ matrix.config.cc }}-${{ matrix.build.type }}-${{ hashFiles('conanfile.py') }}
+          restore-keys: |
+            conan-${{ runner.os }}-${{ matrix.config.cc }}-${{ matrix.build.type }}-
+            conan-${{ runner.os }}-${{ matrix.config.cc }}-
+            conan-${{ runner.os }}-
+
+      - name: Install Conan packages
+        run: >
+          uv run conan install .
+          -b missing -pr:a default ${{ matrix.config.profiles }}
+          -c:a tools.cmake.cmaketoolchain:generator=Ninja
+          -c:h tools.build:compiler_executables="{\"c\": \"${{ matrix.config.cc }}\", \"cpp\": \"${{ matrix.config.cxx }}\"}"
+          -s:h build_type=${{ matrix.build.type }}
+
+      - name: Configure
+        run: uv run cmake --preset ${{ matrix.build.preset }}
+
+      - name: Build
+        run: uv run cmake --build --preset ${{ matrix.build.preset }}
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+
+  analyze:
+    name: Analyze
+    runs-on: windows-2022
+    strategy:
+      matrix:
+        build:
+          - {
+              type: Release,
+              preset: conan-release
+            }
+        config:
+          - {
+              cc: cl,
+              cxx: cl,
+              profiles: '-pr:h conan/msvc194-md'
+            }
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set environment variables
+        run: |
+          echo "CONAN_HOME=${{ runner.temp }}/.conan2" >> ${{ github.env }}
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          activate-environment: true
+
+      - name: Install dependencies
+        run: |
+          uv sync
+          uv run conan profile detect
+
+      - name: Cache Conan packages
+        uses: actions/cache@v5
+        with:
+          path: ${{ env.CONAN_HOME }}/p
+          key: conan-${{ runner.os }}-${{ hashFiles('conanfile.py') }}
+          restore-keys: conan-${{ runner.os }}-
+
+      - name: Install Conan packages
+        run: >
+          uv run conan install .
+          -b missing -pr:a default ${{ matrix.config.profiles }}
+          -c:a tools.cmake.cmaketoolchain:generator=Ninja
+          -c:h tools.env.virtualenv:powershell=pwsh
+          -c:h tools.build:compiler_executables="{'c': '${{ matrix.config.cc }}', 'cpp': '${{ matrix.config.cxx }}'}"
+          -s:h build_type=${{ matrix.build.type }}
+
+      - name: Configure
+        run: >
+          build/${{ matrix.build.type }}/generators/conanbuild.ps1 &&
+          uv run cmake --preset ${{ matrix.build.preset }}
+
+      - name: Run MSVC Code Analysis
+        uses: microsoft/msvc-code-analysis-action@main
+        id: run-analysis
+        with:
+          cmakeBuildDirectory: ./build/${{ matrix.build.type }}
+          buildConfiguration: ${{ matrix.build.type }}
+          ruleset: NativeRecommendedRules.ruleset
+
+      - name: Upload SARIF to GitHub
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: ${{ steps.run-analysis.outputs.sarif }}

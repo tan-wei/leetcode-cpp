@@ -1,0 +1,56 @@
+---
+Checks: >
+  *,
+  -abseil-*,
+  abseil-no-namespace,
+  -altera-struct-pack-align,
+  -altera-unroll-loops,
+  -android-cloexec-fopen,
+  -cppcoreguidelines-owning-memory,
+  -darwin-*,
+  -fuchsia-*,
+  fuchsia-statically-constructed-objects,
+  fuchsia-trailing-return,
+  -google-readability-todo,
+  -hicpp-named-parameter,
+  -llvm-header-guard,
+  -llvmlibc-*,
+  -modernize-use-trailing-return-type,
+  -portability-avoid-pragma-once,
+  -readability-identifier-length,
+  -readability-named-parameter,
+WarningsAsErrors: ''
+HeaderFilterRegex: ''
+FormatStyle: none
+CheckOptions:
+  - key: bugprone-exception-escape.FunctionsThatShouldNotThrow
+    value: 'WinMain;wWinMain'
+  - key: bugprone-misplaced-widening-cast.CheckImplicitCasts
+    value: 'true'
+  - key: bugprone-suspicious-enum-usage.StrictMode
+    value: 'true'
+  - key: cppcoreguidelines-avoid-do-while.IgnoreMacros
+    value: 'true'
+  - key: cppcoreguidelines-narrowing-conversions.PedanticMode
+    value: 'true'
+  - key: google-runtime-int.UnsignedTypePrefix
+    value: 'std::uint'
+  - key: google-runtime-int.SignedTypePrefix
+    value: 'std::int'
+  - key: google-runtime-int.TypeSuffix
+    value: '_t'
+  - key: misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
+    value: 'true'
+  - key: readability-uppercase-literal-suffix.NewSuffixes
+    value: 'L;LL;LU;LLU'
+  - key: readability-identifier-naming.AggressiveDependentMemberLookup
+    value: 'true'
+  - key: readability-identifier-naming.TemplateParameterCase
+    value: CamelCase
+  - key: readability-identifier-naming.MacroDefinitionCase
+    value: UPPER_CASE
+  - key: readability-implicit-bool-conversion.AllowIntegerConditions
+    value: 'true'
+  - key: readability-implicit-bool-conversion.AllowPointerConditions
+    value: 'true'
+...
