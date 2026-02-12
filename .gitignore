@@ -1,8 +1,10 @@
 .venv/
 .vs/
 .vscode/
+.nvim/
 build/
 coverage/
 node_modules/
 CMakeSettings.json
 CMakeUserPresets.json
+.env

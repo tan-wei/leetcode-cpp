@@ -2,7 +2,7 @@
 BasedOnStyle: LLVM
 ---
 Language: Cpp
-AccessModifierOffset: -2
+AccessModifierOffset: -4
 AlignAfterOpenBracket: Align
 AlignArrayOfStructures: None
 AlignConsecutiveAssignments: None
@@ -55,8 +55,6 @@ BreakTemplateDeclarations: Yes
 ColumnLimit: 80
 CommentPragmas: '^ IWYU pragma:'
 CompactNamespaces: false
-ConstructorInitializerIndentWidth: 2
-ContinuationIndentWidth: 2
 Cpp11BracedListStyle: true
 DerivePointerAlignment: false
 DisableFormat: false
@@ -84,7 +82,8 @@ IndentExternBlock: NoIndent
 IndentGotoLabels: false
 IndentPPDirectives: None
 IndentRequiresClause: true
-IndentWidth: 2
+ConstructorInitializerIndentWidth: 4
+ContinuationIndentWidth: 4
 IndentWrappedFunctionNames: false
 InsertBraces: true
 InsertNewlineAtEOF: true
@@ -109,7 +108,7 @@ MaxEmptyLinesToKeep: 1
 NamespaceIndentation: None
 NamespaceMacros: []
 OneLineFormatOffRegex: ''
-PPIndentWidth: 2
+PPIndentWidth: 4
 PackConstructorInitializers: Never
 PenaltyBreakAssignment: 2
 PenaltyBreakBeforeFirstCallParameter: 19
@@ -176,7 +175,8 @@ SpacesInSquareBrackets: false
 Standard: Latest
 StatementAttributeLikeMacros: []
 StatementMacros: []
-TabWidth: 2
+TabWidth: 4
+IndentWidth: 4
 TemplateNames: []
 TypeNames: []
 TypenameMacros: []
