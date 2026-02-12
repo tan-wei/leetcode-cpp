@@ -65,6 +65,7 @@ if(ENABLE_CPPCHECK)
         ${CPPCHECK}
         -v
         --enable=all
+        --check-level=exhaustive
         --inline-suppr
         --error-exitcode=42
         --suppress=missingIncludeSystem
