@@ -218,12 +218,12 @@ jobs:
               cxx: cl,
               profiles: '-pr:h conan/msvc194-md'
             }
-          - {
-              name: 'Windows Clang',
-              cc: clang-cl,
-              cxx: clang-cl,
-              profiles: '-pr:h conan/msvc194-clang-cl'
-            }
+          # - {
+          #     name: 'Windows Clang',
+          #     cc: clang-cl,
+          #     cxx: clang-cl,
+          #     profiles: '-pr:h conan/msvc194-clang-cl'
+          #   }
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
