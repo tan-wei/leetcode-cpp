@@ -14,7 +14,7 @@ class Example(ConanFile):
         "libcurl/*:with_brotli": True,
         "libcurl/*:with_zstd": True,
         "libcurl/*:with_zlib": True,
-        "libcurl/*:with_openssl": True,
+        "libcurl/*:with_ssl": "openssl",
     }
 
     def layout(self):
@@ -23,6 +23,10 @@ class Example(ConanFile):
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
+
+    def configure(self):
+        if self.settings.os == "Windows":
+            self.options["libcurl/*"].with_ssl = "schannel"
 
     def requirements(self):
         self.requires("nlohmann_json/3.12.0")
