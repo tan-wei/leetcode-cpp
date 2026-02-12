@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-02-12 15:07:32
- * Last Modified Date: 2026-02-12 15:09:30
+ * Last Modified Date: 2026-02-12 15:46:39
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -63,7 +63,11 @@ static void load_dotenv(const std::string& path = ".env") {
                                 (val.front() == '\'' && val.back() == '\''))) {
             val = val.substr(1, val.size() - 2);
         }
+#ifdef _WIN32
+        _putenv_s(key.c_str(), val.c_str());
+#else
         setenv(key.c_str(), val.c_str(), 1);
+#endif
     }
 }
 
