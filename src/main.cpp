@@ -3,11 +3,12 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-02-12 17:15:14
- * Last Modified Date: 2026-02-12 17:36:05
+ * Last Modified Date: 2026-02-12 18:46:17
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
 #include <cstdlib>
+#include <ctime>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
@@ -80,6 +81,19 @@ static int generate_random_id(const std::vector<int>& except_ids) {
             return res;
         }
     }
+}
+
+static std::string current_datetime() {
+    std::time_t t = std::time(nullptr);
+    std::tm tm;
+#if defined(_WIN32)
+    localtime_s(&tm, &t);
+#else
+    localtime_r(&t, &tm);
+#endif
+    std::ostringstream oss;
+    oss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
+    return oss.str();
 }
 
 static std::vector<int> get_initialized_ids() {
@@ -296,7 +310,10 @@ static void deal_problem(const fetcher::Problem& problem,
                 std::string("https://leetcode.com/problems/") +
                     problem.title_slug +
                     "/discuss/");
-    // sample insertion removed (template no longer contains __PROBLEM_SAMPLE__)
+    // fill template timestamps
+    std::string now = current_datetime();
+    replace_all(tpl, "__CREATE_DATE__", now);
+    replace_all(tpl, "__LAST_MODIFIED_DATE__", now);
 
     std::ofstream out(file_path);
     out << tpl;

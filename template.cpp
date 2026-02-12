@@ -2,8 +2,8 @@
  * File              : template.cpp
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
- * Date              : 2026-02-12 15:04:21
- * Last Modified Date: 2026-02-12 15:14:13
+ * Date              : __CREATE_DATE__
+ * Last Modified Date: __LAST_MODIFIED_DATE__
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
