@@ -72,6 +72,12 @@ build:
 test:
 	uv run ctest --preset {{preset}}
 
+# Run cppcheck using the generated compile_commands.json (optional: run `just configure` first)
+cppcheck:
+	@command -v cppcheck >/dev/null 2>&1 || { echo "cppcheck not found; install it (brew/apt)"; exit 2; }
+	# Use compile_commands.json so cppcheck picks up include paths from CMake/Conan
+	COMPILE_COMMANDS_PATH=build/{{build_type}}/compile_commands.json; if [ ! -f "$COMPILE_COMMANDS_PATH" ]; then echo "compile_commands.json not found; run 'just configure' first"; exit 1; fi; cppcheck --project="$COMPILE_COMMANDS_PATH" -v --enable=all --check-level=exhaustive --inline-suppr --suppress=missingIncludeSystem --suppress=unmatchedSuppression || true
+
 # Run the compiled leetcode_cpp executable. Depends on `build` so the binary
 # is up-to-date. Override `run_binary` or `build_type` locally if needed.
 run: build
