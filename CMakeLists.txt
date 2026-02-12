@@ -35,6 +35,9 @@ enable_coverage(options)
 # Top-level executable (from CMakeLists-ref.txt)
 add_executable(leetcode_cpp src/main.cpp src/fetcher.cpp)
 target_include_directories(leetcode_cpp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+if(MSVC)
+  target_compile_definitions(leetcode_cpp PRIVATE _CRT_SECURE_NO_WARNINGS)
+endif()
 target_link_libraries(
   leetcode_cpp PRIVATE CURL::libcurl nlohmann_json::nlohmann_json warnings
                        options)
