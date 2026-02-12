@@ -7,9 +7,15 @@ class Example(ConanFile):
     settings = "os", "arch", "compiler", "build_type"
     languages = "C", "C++"
     options = {
-        "fPIC": [True, False]
+        "fPIC": [True, False],
     }
-    default_options = {"fPIC": True}
+    default_options = {
+        "fPIC": True,
+        "libcurl/*:with_brotli": True,
+        "libcurl/*:with_zstd": True,
+        "libcurl/*:with_zlib": True,
+        "libcurl/*:with_openssl": True,
+    }
 
     def layout(self):
         cmake_layout(self)
@@ -19,9 +25,9 @@ class Example(ConanFile):
             del self.options.fPIC
 
     def requirements(self):
-        self.requires("fmt/12.0.0")
-        if not self.conf.get("tools.build:skip_test"):
-            self.requires("gtest/1.17.0")
+        self.requires("nlohmann_json/3.12.0")
+        self.requires("libcurl/8.18.0")
+        self.requires("gtest/1.17.0")
 
     def generate(self):
         deps = CMakeDeps(self)
