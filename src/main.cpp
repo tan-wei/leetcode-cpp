@@ -1,11 +1,4 @@
-/**
- * File              : main.cpp
- * Project           : leetcode-cpp
- * Author            : Wei Tan <tanwei.winterreise@gmail.com>
- * Date              : 2026-02-12 15:07:32
- * Last Modified Date: 2026-02-12 15:46:39
- * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
- */
+#include "fetcher.h"
 
 #include <cstdlib>
 #include <filesystem>
@@ -17,9 +10,6 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-
-// This project headers
-#include "fetcher.h"
 
 namespace fs = std::filesystem;
 using json = nlohmann::json;
@@ -45,7 +35,7 @@ static void load_dotenv(const std::string& path = ".env") {
             continue;
         }
         if (pos != std::string::npos) {
-            line = line.substr(0, pos);
+            line.resize(pos);
         }
         trim(line);
         if (line.empty()) {
@@ -226,7 +216,7 @@ static void deal_solving(int id) {
     }
     std::string base = found.filename().string();
     if (base.size() > 4 && base.substr(base.size() - 4) == ".cpp") {
-        base = base.substr(0, base.size() - 4);
+        base.resize(base.size() - 4);
     }
     if (base.size() > 0 && base[0] == 'p') {
         base[0] = 's';
@@ -246,11 +236,7 @@ static void deal_problem(const fetcher::Problem& problem,
     fn << "p" << std::setw(4) << std::setfill('0') << problem.question_id
        << "_";
     std::string slug = problem.title_slug;
-    for (auto& c : slug) {
-        if (c == '-') {
-            c = '_';
-        }
-    }
+    std::replace(slug.begin(), slug.end(), '-', '_');
     fn << slug;
     std::string file_name = fn.str();
     fs::path dir = "./src/problem";
@@ -355,7 +341,12 @@ int main() {
             if (prob->code_definition.empty()) {
                 continue;
             }
-            deal_problem(*prob, prob->code_definition[0], true);
+            try {
+                deal_problem(*prob, prob->code_definition[0], true);
+            } catch (const std::exception& e) {
+                std::cerr << "Error initializing problem " << fid << ": "
+                          << e.what() << "\n";
+            }
         }
         return 0;
     }
