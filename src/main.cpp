@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-02-12 17:15:14
- * Last Modified Date: 2026-02-12 18:46:17
+ * Last Modified Date: 2026-02-12 18:58:37
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -278,9 +278,14 @@ static void deal_problem(const fetcher::Problem& problem,
     if (!tmpl) {
         throw std::runtime_error("template.cpp not found");
     }
+
     std::string tpl;
-    tpl.assign(std::istreambuf_iterator<char>(tmpl),
-               std::istreambuf_iterator<char>());
+
+    {
+        std::ostringstream ss;
+        ss << tmpl.rdbuf();
+        tpl = ss.str();
+    }
 
     auto replace_all =
         [&](std::string& s, const std::string& a, const std::string& b) {
