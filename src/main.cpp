@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-02-12 17:15:14
- * Last Modified Date: 2026-02-12 17:15:34
+ * Last Modified Date: 2026-02-12 17:36:05
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -260,6 +260,9 @@ static void deal_problem(const fetcher::Problem& problem,
     std::ifstream tmpl("../template.cpp");
     if (!tmpl) {
         tmpl.open("./template.cpp");
+    }
+    if (!tmpl) {
+        throw std::runtime_error("template.cpp not found");
     }
     std::string tpl;
     tpl.assign(std::istreambuf_iterator<char>(tmpl),

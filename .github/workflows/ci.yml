@@ -220,9 +220,9 @@ jobs:
             }
           - {
               name: 'Windows Clang',
-              cc: clang,
-              cxx: clang++,
-              profiles: '-pr:h conan/clang20'
+              cc: clang-cl,
+              cxx: clang-cl,
+              profiles: '-pr:h conan/msvc194-clang-cl'
             }
     steps:
       - name: Checkout repository
