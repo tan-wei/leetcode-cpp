@@ -1,4 +1,11 @@
-#include "fetcher.h"
+/**
+ * File              : main.cpp
+ * Project           : leetcode-cpp
+ * Author            : Wei Tan <tanwei.winterreise@gmail.com>
+ * Date              : 2026-02-12 17:15:14
+ * Last Modified Date: 2026-02-12 17:15:34
+ * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
+ */
 
 #include <cstdlib>
 #include <filesystem>
@@ -10,6 +17,9 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+
+// This project headers
+#include "fetcher.h"
 
 namespace fs = std::filesystem;
 using json = nlohmann::json;
@@ -359,7 +369,12 @@ int main() {
     fetcher::CodeDefinition cd =
         problem->code_definition.empty() ? fetcher::CodeDefinition{}
                                          : problem->code_definition[0];
-    deal_problem(*problem, cd, true);
+    try {
+        deal_problem(*problem, cd, true);
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << "\n";
+        return 1;
+    }
     std::cout << "Wrote ./src/problem/p" << std::setw(4) << std::setfill('0')
               << problem->question_id << "_" << problem->title_slug << ".cpp\n";
     return 0;

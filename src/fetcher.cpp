@@ -163,6 +163,7 @@ static std::vector<CodeDefinition> parse_code_definitions(const json& cdj) {
     return out;
 }
 
+// cppcheck-suppress unusedFunction
 std::optional<Problem> get_problem_by_id(int frontend_question_id) {
     auto problems_opt = get_problems_json();
     if (!problems_opt) {
