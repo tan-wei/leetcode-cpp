@@ -68,8 +68,7 @@ if(ENABLE_CPPCHECK)
         --check-level=exhaustive
         --inline-suppr
         --error-exitcode=42
-        --suppress=missingIncludeSystem
-        --suppress=unmatchedSuppression)
+        --suppressions-list=${CMAKE_SOURCE_DIR}/cppcheck.suppressions)
     set(CMAKE_C_CPPCHECK ${CMAKE_CXX_CPPCHECK})
   else()
     message(SEND_ERROR "Cppcheck requested but executable not found")
