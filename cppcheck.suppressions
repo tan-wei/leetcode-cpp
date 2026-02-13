@@ -1,0 +1,5 @@
+missingIncludeSystem
+unmatchedSuppression
+functionStatic:src/solution/*
+constParameterReference:src/solution/*
+unusedFunction:src/solution/*

@@ -8,3 +8,4 @@ node_modules/
 CMakeSettings.json
 CMakeUserPresets.json
 .env
+compile_commands.json
