@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 4.1 FATAL_ERROR)
 
 project(
-  cpp-project-template
+  leetcode-cpp
   VERSION 0.0.1
-  DESCRIPTION "Tool configuration template"
-  HOMEPAGE_URL https://github.com/b1ackviking/cpp-project-template
+  DESCRIPTION "My Leetcode Solution in C++"
+  HOMEPAGE_URL https://github.com/tan-wei/leetcode-cpp
   LANGUAGES CXX)
 
 include(cmake/defaults.cmake)
