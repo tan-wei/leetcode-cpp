@@ -7,12 +7,6 @@
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
-/**
- * [__PROBLEM_ID__] __PROBLEM_TITLE__
- *
- * __PROBLEM_DESC__
- */
-
 #include <algorithm>
 #include <array>
 #include <bitset>
@@ -44,11 +38,17 @@
 #include <utility>
 #include <vector>
 
-__EXTRA_USE__
-using namespace std;
+/**
+ * [__PROBLEM_ID__] __PROBLEM_TITLE__
+ *
+ * __PROBLEM_DESC__
+ */
 
 // problem: __PROBLEM_LINK__
 // discuss: __DISCUSS_LINK__
+
+using namespace std;
+__EXTRA_USE__
 
 // submission codes start here
 
