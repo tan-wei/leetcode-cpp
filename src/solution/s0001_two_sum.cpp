@@ -3,40 +3,9 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-02-13 11:24:19
- * Last Modified Date: 2026-02-13 11:40:09
+ * Last Modified Date: 2026-02-23 10:27:47
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
-
-#include <algorithm>
-#include <array>
-#include <bitset>
-#include <cassert>
-#include <cctype>
-#include <cerrno>
-#include <cmath>
-#include <cstddef>
-#include <cstdint>
-#include <cstring>
-#include <deque>
-#include <functional>
-#include <iomanip>
-#include <iostream>
-#include <limits>
-#include <list>
-#include <map>
-#include <memory>
-#include <numeric>
-#include <queue>
-#include <set>
-#include <sstream>
-#include <stack>
-#include <string>
-#include <tuple>
-#include <type_traits>
-#include <unordered_map>
-#include <unordered_set>
-#include <utility>
-#include <vector>
 
 /**
  * [0001] Two Sum
@@ -69,6 +38,9 @@
 
 // problem: https://leetcode.com/problems/two-sum/
 // discuss: https://leetcode.com/problems/two-sum/discuss/
+
+#include <unordered_map>
+#include <vector>
 
 using namespace std;
 
