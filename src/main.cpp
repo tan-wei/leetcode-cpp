@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-02-12 17:15:14
- * Last Modified Date: 2026-02-12 18:58:37
+ * Last Modified Date: 2026-02-23 10:19:48
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -14,9 +14,11 @@
 #include <iomanip>
 #include <iostream>
 #include <regex>
+#include <set>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 // This project headers
@@ -178,6 +180,81 @@ static std::string parse_extra_use(const std::string& code) {
     return extra;
 }
 
+static std::string parse_std_headers(const std::string& code) {
+    std::vector<std::pair<std::string, std::string>> mapping = {
+        {"vector", "vector"},
+        {"string", "string"},
+        {"map", "map"},
+        {"unordered_map", "unordered_map"},
+        {"set", "set"},
+        {"unordered_set", "unordered_set"},
+        {"tuple", "tuple"},
+        {"pair", "utility"},
+        {"queue", "queue"},
+        {"stack", "stack"},
+        {"list", "list"},
+        {"deque", "deque"},
+        {"array", "array"},
+        {"bitset", "bitset"},
+        {"sort", "algorithm"},
+        {"lower_bound", "algorithm"},
+        {"upper_bound", "algorithm"},
+        {"binary_search", "algorithm"},
+        {"next_permutation", "algorithm"},
+        {"reverse", "algorithm"},
+        {"unique", "algorithm"},
+        {"cout", "iostream"},
+        {"cin", "iostream"},
+        {"cerr", "iostream"},
+        {"stringstream", "sstream"},
+        {"istringstream", "sstream"},
+        {"ostringstream", "sstream"},
+        {"setw", "iomanip"},
+        {"setfill", "iomanip"},
+        {"setprecision", "iomanip"},
+        {"function", "functional"},
+        {"shared_ptr", "memory"},
+        {"unique_ptr", "memory"},
+        {"make_shared", "memory"},
+        {"accumulate", "numeric"},
+        {"iota", "numeric"},
+        {"numeric_limits", "limits"},
+        {"pow", "cmath"},
+        {"sqrt", "cmath"},
+        {"memset", "cstring"},
+        {"memcpy", "cstring"},
+        {"int64_t", "cstdint"},
+        {"uint64_t", "cstdint"},
+        {"size_t", "cstddef"},
+        {"regex", "regex"},
+        {"smatch", "regex"},
+        {"regex_search", "regex"},
+        {"enable_if", "type_traits"},
+        {"is_same", "type_traits"}};
+
+    std::set<std::string> headers;
+    for (auto& pr : mapping) {
+        try {
+            std::regex r("\\b" + pr.first + "\\b");
+            if (std::regex_search(code, r)) {
+                headers.insert(pr.second);
+            }
+        } catch (...) {
+            // ignore regex errors for safety
+        }
+    }
+
+    if (headers.empty()) {
+        headers.insert("iostream");
+    }
+
+    std::ostringstream oss;
+    for (const auto& header : headers) {
+        oss << "#include <" << header << ">\n";
+    }
+    return oss.str();
+}
+
 static std::string build_desc(const std::string& content) {
     std::string s = content;
     std::vector<std::pair<std::string, std::string>> reps = {
@@ -212,6 +289,13 @@ static std::string build_desc(const std::string& content) {
         s.replace(pos, needle.size(), repl);
         pos += repl.size();
     }
+    // remove <font ...> and </font> tags that may appear in descriptions
+    try {
+        s = std::regex_replace(s, std::regex("<font[^>]*>"), std::string());
+        s = std::regex_replace(s, std::regex("</font>"), std::string());
+    } catch (...) {
+        // ignore regex errors
+    }
     return s;
 }
 
@@ -239,6 +323,7 @@ static void deal_solving(int id) {
         throw std::runtime_error("problem file not found");
     }
     std::string base = found.filename().string();
+    std::string orig_base = base;
     if (base.size() > 4 && base.substr(base.size() - 4) == ".cpp") {
         base.resize(base.size() - 4);
     }
@@ -251,11 +336,30 @@ static void deal_solving(int id) {
         throw std::runtime_error("solution already exists");
     }
     fs::rename(found, solution_path);
+    // Update the File header inside the moved file: replace orig filename with
+    // new one
+    try {
+        std::ifstream in(solution_path);
+        if (in) {
+            std::ostringstream ss;
+            ss << in.rdbuf();
+            std::string content = ss.str();
+            std::string orig_name = orig_base;
+            size_t pos = content.find(orig_name);
+            if (pos != std::string::npos) {
+                std::string new_name = base + ".cpp";
+                content.replace(pos, orig_name.length(), new_name);
+                std::ofstream out(solution_path);
+                out << content;
+            }
+        }
+    } catch (...) {
+        // ignore errors updating header
+    }
 }
 
 static void deal_problem(const fetcher::Problem& problem,
-                         const fetcher::CodeDefinition& code,
-                         bool write_mod_file) {
+                         const fetcher::CodeDefinition& code) {
     std::ostringstream fn;
     fn << "p" << std::setw(4) << std::setfill('0') << problem.question_id
        << "_";
@@ -305,8 +409,11 @@ static void deal_problem(const fetcher::Problem& problem,
         std::ostringstream idbuf;
         idbuf << std::setw(4) << std::setfill('0') << problem.question_id;
         replace_all(tpl, "__PROBLEM_ID__", idbuf.str());
+        // Replace file name placeholder with actual file name (pXXXX_slug.cpp)
+        replace_all(tpl, "__FILE_NAME__", file_name + ".cpp");
     }
     replace_all(tpl, "__EXTRA_USE__", parse_extra_use(default_code));
+    replace_all(tpl, "__STL_INCLUDES__", parse_std_headers(default_code));
     replace_all(tpl, "__PROBLEM_LINK__",
                 std::string("https://leetcode.com/problems/") +
                     problem.title_slug +
@@ -323,8 +430,6 @@ static void deal_problem(const fetcher::Problem& problem,
     std::ofstream out(file_path);
     out << tpl;
     out.close();
-
-    (void)write_mod_file; // mod file generation intentionally disabled
 }
 
 int main() {
@@ -377,7 +482,7 @@ int main() {
                 continue;
             }
             try {
-                deal_problem(*prob, prob->code_definition[0], true);
+                deal_problem(*prob, prob->code_definition[0]);
             } catch (const std::exception& e) {
                 std::cerr << "Error initializing problem " << fid << ": "
                           << e.what() << "\n";
@@ -395,7 +500,7 @@ int main() {
         problem->code_definition.empty() ? fetcher::CodeDefinition{}
                                          : problem->code_definition[0];
     try {
-        deal_problem(*problem, cd, true);
+        deal_problem(*problem, cd);
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << "\n";
         return 1;
