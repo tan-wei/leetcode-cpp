@@ -1,42 +1,11 @@
 /**
- * File              : template.cpp
+ * File              : __FILE_NAME__
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : __CREATE_DATE__
  * Last Modified Date: __LAST_MODIFIED_DATE__
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
-
-#include <algorithm>
-#include <array>
-#include <bitset>
-#include <cassert>
-#include <cctype>
-#include <cerrno>
-#include <cmath>
-#include <cstddef>
-#include <cstdint>
-#include <cstring>
-#include <deque>
-#include <functional>
-#include <iomanip>
-#include <iostream>
-#include <limits>
-#include <list>
-#include <map>
-#include <memory>
-#include <numeric>
-#include <queue>
-#include <set>
-#include <sstream>
-#include <stack>
-#include <string>
-#include <tuple>
-#include <type_traits>
-#include <unordered_map>
-#include <unordered_set>
-#include <utility>
-#include <vector>
 
 /**
  * [__PROBLEM_ID__] __PROBLEM_TITLE__
@@ -47,6 +16,7 @@
 // problem: __PROBLEM_LINK__
 // discuss: __DISCUSS_LINK__
 
+__STL_INCLUDES__
 using namespace std;
 __EXTRA_USE__
 
