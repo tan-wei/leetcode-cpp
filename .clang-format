@@ -42,6 +42,16 @@ BreakAfterJavaFieldAnnotations: true
 BreakAfterReturnType: Automatic
 BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Attach
+BreakAfterOpenBracketBracedList: false
+BreakAfterOpenBracketFunction: false
+BreakAfterOpenBracketIf: false
+BreakAfterOpenBracketLoop: false
+BreakAfterOpenBracketSwitch: false
+BreakBeforeCloseBracketBracedList: false
+BreakBeforeCloseBracketFunction: false
+BreakBeforeCloseBracketIf: false
+BreakBeforeCloseBracketLoop: false
+BreakBeforeCloseBracketSwitch: false
 BreakBeforeConceptDeclarations: true
 BreakBeforeInlineASMColon: OnlyMultiline
 BreakBeforeTemplateCloser: true
@@ -84,6 +94,7 @@ IndentPPDirectives: None
 IndentRequiresClause: true
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
+IndentWidth: 4
 IndentWrappedFunctionNames: false
 InsertBraces: true
 InsertNewlineAtEOF: true
@@ -109,6 +120,11 @@ NamespaceIndentation: None
 NamespaceMacros: []
 OneLineFormatOffRegex: ''
 PPIndentWidth: 4
+NumericLiteralCase:
+  ExponentLetter: Lower
+  HexDigit: Upper
+  Prefix: Lower
+  Suffix: Upper
 PackConstructorInitializers: Never
 PenaltyBreakAssignment: 2
 PenaltyBreakBeforeFirstCallParameter: 19
@@ -148,7 +164,10 @@ RequiresExpressionIndentation: OuterScope
 SeparateDefinitionBlocks: Always
 ShortNamespaceLines: 0
 SkipMacroDefinitionBody: false
-SortIncludes: true
+SortIncludes:
+  Enabled: true
+  IgnoreCase: true
+  IgnoreExtension: true
 SortJavaStaticImport: Before
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: false
@@ -164,6 +183,7 @@ SpaceBeforeParens: ControlStatements
 SpaceBeforeRangeBasedForLoopColon: true
 SpaceBeforeSquareBrackets: false
 SpaceInEmptyBlock: false
+SpaceInEmptyBraces: Never
 SpacesBeforeTrailingComments: 1
 SpacesInAngles: Never
 SpacesInContainerLiterals: true
@@ -176,7 +196,6 @@ Standard: Latest
 StatementAttributeLikeMacros: []
 StatementMacros: []
 TabWidth: 4
-IndentWidth: 4
 TemplateNames: []
 TypeNames: []
 TypenameMacros: []

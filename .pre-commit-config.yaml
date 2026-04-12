@@ -28,25 +28,25 @@ repos:
         args: [--autofix, --no-sort-keys]
       - id: requirements-txt-fixer
       - id: trailing-whitespace
-  - repo: https://github.com/cheshirekow/cmake-format-precommit
-    rev: v0.6.13
+  - repo: https://github.com/BlankSpruce/gersemi
+    rev: 0.26.1
     hooks:
-      - id: cmake-format
+      - id: gersemi
   - repo: https://github.com/doublify/pre-commit-clang-format
     rev: 62302476d0da01515660132d76902359bed0f782
     hooks:
       - id: clang-format
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
-    rev: v9.22.0
+    rev: v9.24.0
     hooks:
       - id: commitlint
         stages: [commit-msg]
         additional_dependencies: ['@commitlint/config-conventional']
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.20.0
+    rev: v3.21.2
     hooks:
       - id: pyupgrade
-        args: [--py313-plus]
+        args: [--py314-plus]
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.10.0
     hooks:
@@ -61,6 +61,6 @@ repos:
       - id: rst-inline-touching-normal
       - id: text-unicode-replacement-char
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.9.4
+    rev: 0.11.3
     hooks:
       - id: uv-lock

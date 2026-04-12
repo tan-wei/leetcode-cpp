@@ -73,6 +73,9 @@ Testing/
 .vs/
 .vscode/
 .nvim/
+.venv/
+.vs/
+.vscode/
 build/
 coverage/
 node_modules/

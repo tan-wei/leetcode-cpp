@@ -101,7 +101,7 @@ jobs:
           -D ENABLE_FORTIFY_SOURCE:BOOL=${{ matrix.build.type != 'Debug' }}
 
       - name: Build
-        run: uv run cmake --build --preset ${{ matrix.build.preset }}
+        run: uv run cmake --build --preset ${{ matrix.build.preset }} --target all all_verify_interface_header_sets
 
       - name: Run tests
         run: uv run ctest --preset ${{ matrix.build.preset }}
@@ -129,9 +129,10 @@ jobs:
         config:
           - {
               name: 'Macos Clang',
-              cc: $(brew --prefix llvm@21)/bin/clang,
-              cxx: $(brew --prefix llvm@21)/bin/clang++,
-              profiles: '-pr:h conan/clang21 -pr:h conan/libc++'
+              cc: $(brew --prefix llvm@22)/bin/clang,
+              cxx: $(brew --prefix llvm@22)/bin/clang++,
+              gcov: $(brew --prefix llvm@22)/bin/llvm-cov gcov,
+              profiles: '-pr:h conan/clang22 -pr:h conan/libc++'
             }
     steps:
       - name: Checkout repository
@@ -144,9 +145,9 @@ jobs:
       - name: Force clang to use homebrew libc++
         run: |
           mkdir ~/.config/clang
-          echo "-I/opt/homebrew/opt/llvm/include" > ~/.config/clang/clang++.cfg
-          echo "-L/opt/homebrew/opt/llvm/lib/c++" >> ~/.config/clang/clang++.cfg
-          echo "-L/opt/homebrew/opt/llvm/lib/unwind" >> ~/.config/clang/clang++.cfg
+          echo "-I$HOMEBREW_PREFIX/opt/llvm/include" > ~/.config/clang/clang++.cfg
+          echo "-L$HOMEBREW_PREFIX/opt/llvm/lib/c++" >> ~/.config/clang/clang++.cfg
+          echo "-L$HOMEBREW_PREFIX/opt/llvm/lib/unwind" >> ~/.config/clang/clang++.cfg
           echo "-lunwind" >> ~/.config/clang/clang++.cfg
 
       - name: Setup uv
@@ -156,7 +157,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install llvm@21
+          brew install llvm@22
           uv sync
           uv run conan profile detect
 
@@ -189,18 +190,18 @@ jobs:
           -D ENABLE_FORTIFY_SOURCE:BOOL=${{ matrix.build.type != 'Debug' }}
 
       - name: Build
-        run: uv run cmake --build --preset ${{ matrix.build.preset }}
+        run: uv run cmake --build --preset ${{ matrix.build.preset }} --target all all_verify_interface_header_sets
 
       - name: Run tests
         run: uv run ctest --preset ${{ matrix.build.preset }}
 
       - name: Collect test coverage
         if: matrix.build.type == 'Debug'
-        run: GCOV="$(brew --prefix llvm@21)/bin/llvm-cov gcov" uv run gcovr
+        run: GCOV="${{ matrix.config.gcov }}" uv run gcovr
 
   build_windows:
     name: ${{ matrix.config.name }} ${{ matrix.build.type }}
-    runs-on: windows-2025
+    runs-on: windows-2025-vs2026
     strategy:
       matrix:
         build:
@@ -217,14 +218,14 @@ jobs:
               name: 'Windows MSVC',
               cc: cl,
               cxx: cl,
-              profiles: '-pr:h conan/msvc194-md'
+              profiles: '-pr:h conan/msvc195-md'
             }
-          # - {
-          #     name: 'Windows Clang',
-          #     cc: clang-cl,
-          #     cxx: clang-cl,
-          #     profiles: '-pr:h conan/msvc194-clang-cl'
-          #   }
+          - {
+              name: 'Windows Clang',
+              cc: clang,
+              cxx: clang++,
+              profiles: '-pr:h conan/clang20'
+            }
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -274,7 +275,7 @@ jobs:
       - name: Build
         run: >
           build/${{ matrix.build.Type }}/generators/conanbuild.ps1 &&
-          uv run cmake --build --preset ${{ matrix.build.preset }}
+          uv run cmake --build --preset ${{ matrix.build.preset }} --target all all_verify_interface_header_sets
 
       - name: Run tests
         if: matrix.build.type != 'Debug'
@@ -347,14 +348,14 @@ jobs:
         run: uv run cmake --preset ${{ matrix.build.preset }}
 
       - name: Build
-        run: uv run cmake --build --preset ${{ matrix.build.preset }}
+        run: uv run cmake --build --preset ${{ matrix.build.preset }} --target all all_verify_interface_header_sets
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
 
   analyze:
     name: Analyze
-    runs-on: windows-2022
+    runs-on: windows-2025-vs2026
     strategy:
       matrix:
         build:
@@ -366,7 +367,7 @@ jobs:
           - {
               cc: cl,
               cxx: cl,
-              profiles: '-pr:h conan/msvc194-md'
+              profiles: '-pr:h conan/msvc195-md'
             }
     steps:
       - name: Checkout repository
