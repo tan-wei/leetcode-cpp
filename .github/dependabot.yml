@@ -8,11 +8,7 @@ updates:
     schedule:
       interval: "daily"
     assignees:
-<<<<<<< HEAD
       - "tan-wei"
-=======
-      - "b1ackviking"
->>>>>>> template/main
     groups:
       github-actions:
         applies-to: version-updates
