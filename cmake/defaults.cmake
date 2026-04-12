@@ -16,18 +16,20 @@ endif()
 option(ENABLE_HARDENINGS "Enable hardenings" OFF)
 
 # Useful CMake defaults
+set(CMAKE_ERROR_DEPRECATED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
 set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
 set(CMAKE_C_EXTENSIONS OFF)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_SCAN_FOR_MODULES ON)
+set(CMAKE_VERIFY_INTERFACE_HEADER_SETS ON)
+set(CMAKE_VERIFY_PRIVATE_HEADER_SETS ON)
 set(CMAKE_LINK_WHAT_YOU_USE TRUE)
 set(CMAKE_VS_JUST_MY_CODE_DEBUGGING ON)
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 set(CMAKE_GTEST_DISCOVER_TESTS_DISCOVERY_MODE PRE_TEST)
-set(CMAKE_CTEST_ARGUMENTS --progress --output-on-failure)
-list(APPEND CMAKE_CTEST_ARGUMENTS --parallel)
+set(CMAKE_CTEST_ARGUMENTS --progress --output-on-failure --parallel)
 
 # Set a default build type if none was specified
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -65,10 +67,13 @@ if(ENABLE_CPPCHECK)
         ${CPPCHECK}
         -v
         --enable=all
-        --check-level=exhaustive
+        --disable=unusedFunction
         --inline-suppr
         --error-exitcode=42
-        --suppressions-list=${CMAKE_SOURCE_DIR}/cppcheck.suppressions)
+        --checkers-report=${CMAKE_BINARY_DIR}/cppcheck.report
+        --suppress=checkersReport # see cppcheck.report for details
+        --suppress=missingIncludeSystem
+        --suppress=unmatchedSuppression)
     set(CMAKE_C_CPPCHECK ${CMAKE_CXX_CPPCHECK})
   else()
     message(SEND_ERROR "Cppcheck requested but executable not found")
@@ -122,6 +127,7 @@ endif()
 # Apply the default set of warnings to the target
 function(set_target_warnings target_name)
   set(msvc_warnings
+      # gersemi: off
       /W4 # Baseline reasonable warnings
       /w14242 # 'identifier': conversion from 'type1' to 'type1', possible loss
               # of data
@@ -153,8 +159,10 @@ function(set_target_warnings target_name)
       /w14928 # illegal copy-initialization; more than one user-defined
               # conversion has been implicitly applied
       /permissive- # standards conformance mode for MSVC compiler.
+      # gersemi: on
   )
   set(clang_warnings
+      # gersemi: off
       -Wall
       -Wextra # reasonable and standard
       -Wpedantic # warn if non-standard C++ is used
@@ -174,9 +182,11 @@ function(set_target_warnings target_name)
       -Wdouble-promotion # warn if float is implicit promoted to double
       -Wformat=2 # warn on security issues around functions that format output
                  # (ie printf)
+      # gersemi: on
   )
   set(gcc_warnings
       ${clang_warnings}
+      # gersemi: off
       -Wmisleading-indentation # warn if indentation implies blocks where blocks
                                # do not exist
       -Wduplicated-cond # warn if if / else chain has duplicated conditions
@@ -184,6 +194,7 @@ function(set_target_warnings target_name)
       -Wlogical-op # warn about logical operations being used where bitwise were
                    # probably wanted
       -Wuseless-cast # warn if you perform a cast to the same type
+      # gersemi: on
   )
   if(MSVC)
     set(warnings ${msvc_warnings})
