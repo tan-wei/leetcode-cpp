@@ -156,7 +156,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install llvm@21
+          brew install llvm@22
           uv sync
           uv run conan profile detect
 
