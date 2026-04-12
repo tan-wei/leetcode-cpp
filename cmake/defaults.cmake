@@ -67,6 +67,7 @@ if(ENABLE_CPPCHECK)
         ${CPPCHECK}
         -v
         --enable=all
+        --check-level=exhaustive
         --disable=unusedFunction
         --inline-suppr
         --error-exitcode=42
