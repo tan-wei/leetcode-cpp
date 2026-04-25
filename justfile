@@ -4,7 +4,7 @@ set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
 
 build_type := "Debug"
 preset := "conan-debug"
-profile := "conan/clang21"
+profile := "conan/clang22"
 generator := "Ninja"
 CC := "clang"
 CXX := "clang++"
