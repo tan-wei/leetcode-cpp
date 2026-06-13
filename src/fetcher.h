@@ -3,8 +3,8 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-02-12 15:06:15
- * Last Modified Date: 2026-02-12 17:36:13
- * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
+ * Last Modified Date: 2026-06-13 12:08:31
+ * Last Modified By  : Winterreise <winterreise.tanwei@gmail.com>
  */
 
 #ifndef LEETCODE_CPP_SRC_FETCHER_H
@@ -35,7 +35,7 @@ struct Problem {
     std::vector<CodeDefinition> code_definition;
     std::string sample_test_case;
     std::string difficulty;
-    int question_id;
+    int question_id{};
     std::string return_type;
 };
 
