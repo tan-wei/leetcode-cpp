@@ -217,13 +217,13 @@ jobs:
               name: 'Windows MSVC',
               cc: cl,
               cxx: cl,
-              profiles: '-pr:h conan/msvc194-md'
+              profiles: '-pr:h conan/msvc195-md'
             }
           # - {
           #     name: 'Windows Clang',
           #     cc: clang-cl,
           #     cxx: clang-cl,
-          #     profiles: '-pr:h conan/msvc194-clang-cl'
+          #     profiles: '-pr:h conan/msvc195-clang-cl'
           #   }
     steps:
       - name: Checkout repository
@@ -354,7 +354,7 @@ jobs:
 
   analyze:
     name: Analyze
-    runs-on: windows-2022
+    runs-on: windows-2025
     strategy:
       matrix:
         build:
@@ -366,7 +366,7 @@ jobs:
           - {
               cc: cl,
               cxx: cl,
-              profiles: '-pr:h conan/msvc194-md'
+              profiles: '-pr:h conan/msvc195-md'
             }
     steps:
       - name: Checkout repository
