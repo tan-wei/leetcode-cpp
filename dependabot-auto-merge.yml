@@ -1,0 +1,221 @@
+name: Dependabot Auto Merge
+
+'on':
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+  schedule:
+    - cron: '23 3 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: dependabot-auto-merge
+  cancel-in-progress: false
+
+permissions:
+  checks: read
+  contents: write
+  pull-requests: write
+
+env:
+  MIN_PR_AGE_DAYS: 3
+  PREFERRED_MERGE_METHODS: squash,merge,rebase
+
+jobs:
+  merge:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Merge eligible Dependabot pull requests
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const minAgeDays = Number(process.env.MIN_PR_AGE_DAYS);
+
+            if (!Number.isFinite(minAgeDays) || minAgeDays < 0) {
+              core.setFailed(`MIN_PR_AGE_DAYS must be a non-negative number, got ${process.env.MIN_PR_AGE_DAYS}`);
+              return;
+            }
+
+            const preferredMethods = (process.env.PREFERRED_MERGE_METHODS ?? '')
+              .split(',')
+              .map((method) => method.trim())
+              .filter(Boolean);
+            const repoMergeFlags = {
+              merge: 'allow_merge_commit',
+              squash: 'allow_squash_merge',
+              rebase: 'allow_rebase_merge',
+            };
+
+            const { data: repo } = await github.rest.repos.get({
+              ...context.repo,
+            });
+
+            const mergeMethod = preferredMethods.find((method) => repo[repoMergeFlags[method]]);
+
+            if (!mergeMethod) {
+              core.setFailed(`No enabled merge method matched PREFERRED_MERGE_METHODS=${process.env.PREFERRED_MERGE_METHODS}`);
+              return;
+            }
+
+            const pullNumbers = new Set();
+
+            if (context.eventName === 'workflow_run') {
+              for (const pr of context.payload.workflow_run.pull_requests ?? []) {
+                pullNumbers.add(pr.number);
+              }
+            } else {
+              const pulls = await github.paginate(github.rest.pulls.list, {
+                ...context.repo,
+                state: 'open',
+                per_page: 100,
+              });
+
+              for (const pr of pulls) {
+                if (pr.user?.login === 'dependabot[bot]') {
+                  pullNumbers.add(pr.number);
+                }
+              }
+            }
+
+            if (pullNumbers.size === 0) {
+              core.info('No candidate pull requests found.');
+              return;
+            }
+
+            async function requestBranchUpdate(pr) {
+              try {
+                await github.rest.pulls.updateBranch({
+                  ...context.repo,
+                  pull_number: pr.number,
+                  expected_head_sha: pr.head.sha,
+                });
+                core.info(`#${pr.number} is behind ${pr.base.ref}; requested a branch update and will wait for fresh CI.`);
+                return true;
+              } catch (error) {
+                core.warning(`Failed to update branch for #${pr.number}: ${error.message}`);
+                return false;
+              }
+            }
+
+            const minAgeMs = minAgeDays * 24 * 60 * 60 * 1000;
+            const allowedCheckConclusions = new Set(['SUCCESS', 'NEUTRAL', 'SKIPPED']);
+            const now = Date.now();
+            const statusRollupQuery = `
+              query($owner: String!, $repo: String!, $prNumber: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  pullRequest(number: $prNumber) {
+                    commits(last: 1) {
+                      nodes {
+                        commit {
+                          statusCheckRollup {
+                            state
+                            contexts(first: 100) {
+                              nodes {
+                                __typename
+                                ... on CheckRun {
+                                  name
+                                  status
+                                  conclusion
+                                }
+                                ... on StatusContext {
+                                  context
+                                  state
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            for (const pull_number of pullNumbers) {
+              const { data: pr } = await github.rest.pulls.get({
+                ...context.repo,
+                pull_number,
+              });
+
+              if (pr.user?.login !== 'dependabot[bot]') {
+                core.info(`#${pr.number} is not authored by Dependabot, skipping.`);
+                continue;
+              }
+
+              if (pr.state !== 'open' || pr.draft) {
+                core.info(`#${pr.number} is not open for merge, skipping.`);
+                continue;
+              }
+
+              if (pr.mergeable_state === 'dirty') {
+                core.info(`#${pr.number} has merge conflicts, skipping.`);
+                continue;
+              }
+
+              const ageMs = now - new Date(pr.created_at).getTime();
+
+              if (ageMs < minAgeMs) {
+                const ageHours = (ageMs / (60 * 60 * 1000)).toFixed(1);
+                core.info(`#${pr.number} is ${ageHours} hour(s) old; waiting for ${minAgeDays} day(s).`);
+                continue;
+              }
+
+              if (pr.mergeable_state === 'behind') {
+                await requestBranchUpdate(pr);
+                continue;
+              }
+
+              const rollupResult = await github.graphql(statusRollupQuery, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                prNumber: pr.number,
+              });
+              const rollup = rollupResult.repository.pullRequest?.commits.nodes[0]?.commit.statusCheckRollup;
+
+              if (!rollup || rollup.state !== 'SUCCESS') {
+                core.info(`#${pr.number} has status rollup ${rollup?.state ?? 'NONE'}, skipping.`);
+                continue;
+              }
+
+              const blockingContexts = (rollup.contexts.nodes ?? []).filter((checkContext) => {
+                if (checkContext.__typename === 'CheckRun') {
+                  return checkContext.status !== 'COMPLETED' || !allowedCheckConclusions.has(checkContext.conclusion ?? '');
+                }
+
+                if (checkContext.__typename === 'StatusContext') {
+                  return checkContext.state !== 'SUCCESS';
+                }
+
+                return true;
+              });
+
+              if (blockingContexts.length > 0) {
+                const names = blockingContexts.map((checkContext) => {
+                  if (checkContext.__typename === 'CheckRun') {
+                    return `${checkContext.name}:${checkContext.conclusion ?? checkContext.status}`;
+                  }
+
+                  return `${checkContext.context}:${checkContext.state}`;
+                });
+                core.info(`#${pr.number} still has incomplete or failing checks: ${names.join(', ')}`);
+                continue;
+              }
+
+              try {
+                const { data: mergeResult } = await github.rest.pulls.merge({
+                  ...context.repo,
+                  pull_number: pr.number,
+                  merge_method: mergeMethod,
+                });
+                core.info(`Merged #${pr.number}: ${mergeResult.message}`);
+              } catch (error) {
+                if (/behind|base branch was modified|update branch/i.test(error.message ?? '')) {
+                  await requestBranchUpdate(pr);
+                  continue;
+                }
+
+                core.warning(`Failed to merge #${pr.number}: ${error.message}`);
+              }
+            }
