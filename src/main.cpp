@@ -3,8 +3,8 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-02-12 17:15:14
- * Last Modified Date: 2026-08-27 09:13:31
- * Last Modified By  : Winterreise <winterreise.tanwei@gmail.com>
+ * Last Modified Date: 2026-08-27 09:24:49
+ * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
 #include <cstdlib>
@@ -299,7 +299,7 @@ static std::string build_desc(const std::string& content) {
     return s;
 }
 
-static std::string trim_copy(std::string s) {
+static std::string trim_copy(const std::string& s) {
     size_t begin = s.find_first_not_of(" \t\r\n");
     if (begin == std::string::npos) {
         return {};
@@ -308,7 +308,7 @@ static std::string trim_copy(std::string s) {
     return s.substr(begin, end - begin + 1);
 }
 
-static std::string collect_input(int argc, char* argv[]) {
+static std::string collect_input(int argc, const char* const argv[]) {
     if (argc <= 1) {
         return {};
     }
