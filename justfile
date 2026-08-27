@@ -82,8 +82,8 @@ cppcheck:
 # Run the compiled leetcode_cpp executable. Depends on `build` so the binary
 
 # is up-to-date. Override `run_binary` or `build_type` locally if needed.
-run: build
-    uv run ./build/{{ build_type }}/{{ run_binary }} ${RUN_ARGS:-}
+run *args: build
+    uv run ./build/{{ build_type }}/{{ run_binary }} {{ args }} ${RUN_ARGS:-}
 
 # Cleaning targets
 # - `clean-setup`: remove setup artifacts (virtualenv, pre-commit hooks)

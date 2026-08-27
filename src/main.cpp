@@ -3,8 +3,8 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-02-12 17:15:14
- * Last Modified Date: 2026-02-23 10:19:48
- * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
+ * Last Modified Date: 2026-08-27 09:13:31
+ * Last Modified By  : Winterreise <winterreise.tanwei@gmail.com>
  */
 
 #include <cstdlib>
@@ -299,6 +299,30 @@ static std::string build_desc(const std::string& content) {
     return s;
 }
 
+static std::string trim_copy(std::string s) {
+    size_t begin = s.find_first_not_of(" \t\r\n");
+    if (begin == std::string::npos) {
+        return {};
+    }
+    size_t end = s.find_last_not_of(" \t\r\n");
+    return s.substr(begin, end - begin + 1);
+}
+
+static std::string collect_input(int argc, char* argv[]) {
+    if (argc <= 1) {
+        return {};
+    }
+
+    std::ostringstream oss;
+    for (int index = 1; index < argc; ++index) {
+        if (index > 1) {
+            oss << ' ';
+        }
+        oss << argv[index];
+    }
+    return trim_copy(oss.str());
+}
+
 static void deal_solving(int id) {
     std::ostringstream oss;
     oss << std::setw(4) << std::setfill('0') << id;
@@ -432,15 +456,28 @@ static void deal_problem(const fetcher::Problem& problem,
     out.close();
 }
 
-int main() {
-    std::cout << "Welcome to leetcode-cpp scaffold (translated).\n";
+int main(int argc, char* argv[]) {
+    std::cout << "Welcome to leetcode-cpp.\n";
     // load environment variables from ./ .env (simple local loader)
     load_dotenv();
     auto initialized = get_initialized_ids();
-    std::cout
-        << "Please enter frontend problem id, or 'random', or 'all', or 'solve <id>':\n";
-    std::string input;
-    std::getline(std::cin, input);
+    std::string input = collect_input(argc, argv);
+    if (input.empty()) {
+        std::cout
+            << "Please enter frontend problem id, or 'random', or 'all', or 'solve <id>':\n";
+        if (!std::getline(std::cin, input)) {
+            std::cerr << "No input provided.\n";
+            return 1;
+        }
+        input = trim_copy(input);
+    }
+
+    if (input.empty()) {
+        std::cerr
+            << "Invalid command. Use a problem id, 'random', 'all', or 'solve <id>'.\n";
+        return 1;
+    }
+
     std::smatch m;
     std::regex solving_pattern("^solve (\\d+)$");
     if (std::regex_match(input, m, solving_pattern)) {
@@ -490,7 +527,14 @@ int main() {
         }
         return 0;
     }
-    int id = std::stoi(input);
+    std::regex problem_id_pattern("^(\\d+)$");
+    if (!std::regex_match(input, m, problem_id_pattern)) {
+        std::cerr
+            << "Invalid command. Use a problem id, 'random', 'all', or 'solve <id>'.\n";
+        return 1;
+    }
+
+    int id = std::stoi(m[1].str());
     auto problem = fetcher::get_problem_by_id(id);
     if (!problem) {
         std::cerr << "Problem not found or paid-only.\n";
