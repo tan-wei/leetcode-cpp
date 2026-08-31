@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Merge eligible Dependabot pull requests
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const minAgeDays = Number(process.env.MIN_PR_AGE_DAYS);
