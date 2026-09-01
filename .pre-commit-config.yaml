@@ -36,6 +36,7 @@ repos:
     rev: 62302476d0da01515660132d76902359bed0f782
     hooks:
       - id: clang-format
+        exclude: \.(js|json|java|m|proto|vert|frag|glsl|ispc|ipp|ih)$
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
     rev: v9.22.0
     hooks:
