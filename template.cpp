@@ -17,8 +17,11 @@
 // discuss: __DISCUSS_LINK__
 
 __STL_INCLUDES__
-using namespace std;
+
 __EXTRA_USE__
+
+using namespace std;
+__EXTRA_USING__
 
 // submission codes start here
 
@@ -28,6 +31,8 @@ __PROBLEM_DEFAULT_CODE__
 
 #if defined(ENABLE_GTEST)
 #include <gtest/gtest.h>
+
+__GTEST_EXTRA__
 
 TEST(Problem__PROBLEM_ID__, Example1) {
     // add assertions here
