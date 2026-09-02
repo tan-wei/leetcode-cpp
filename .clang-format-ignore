@@ -1,12 +1,15 @@
-# clang-format should only format C/C++ files; ignore everything else.
-*
-!*.c
-!*.cc
-!*.cpp
-!*.cxx
-!*.h
-!*.hpp
-!*.hxx
-!*.hh
-!*.ixx
-!*.tpp
+# Ignore non-C/C++ files and build artifacts.
+build/
+.conan/
+.venv/
+*.md
+*.json
+*.toml
+*.py
+*.cfg
+*.txt
+*.yml
+*.yaml
+*.gitignore
+justfile
+LICENSE
