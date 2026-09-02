@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <ranges>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -62,31 +63,25 @@ inline std::string to_string(const ListNode* h) {
 }
 
 inline ListNode* to_linked_list(const std::string& s) {
-    std::string t;
-    t.reserve(s.size());
-    for (char c : s) {
-        if (!std::isspace((unsigned char)c)) {
-            t.push_back(c);
-        }
-    }
-    if (!t.empty() && t.front() == '[' && t.back() == ']') {
+    // Strip whitespace
+    std::string t = s;
+    std::erase_if(t, [](unsigned char c) { return std::isspace(c); });
+
+    // Strip surrounding brackets
+    if (t.size() >= 2 && t.front() == '[' && t.back() == ']') {
         t = t.substr(1, t.size() - 2);
     }
     if (t.empty()) {
         return nullptr;
     }
-    std::vector<int> vals;
-    std::istringstream iss(t);
-    std::string tok;
-    while (std::getline(iss, tok, ',')) {
-        if (tok.empty()) {
-            continue;
-        }
-        try {
-            vals.push_back(std::stoi(tok));
-        } catch (...) {}
-    }
-    return to_linked_list(vals);
+
+    // Parse comma-separated integers
+    auto split = std::views::split(t, ',') |
+                 std::views::filter([](auto&& r) { return !r.empty(); }) |
+                 std::views::transform([](auto&& r) -> int {
+                     return std::stoi(std::string(r.begin(), r.end()));
+                 });
+    return to_linked_list(std::vector<int>(split.begin(), split.end()));
 }
 
 inline void free_list(ListNode* h) {
