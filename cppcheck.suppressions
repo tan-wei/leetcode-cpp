@@ -3,3 +3,9 @@ unmatchedSuppression
 functionStatic:src/solution/*
 constParameterReference:src/solution/*
 unusedFunction:src/solution/*
+
+# Each LeetCode problem has its own Solution class; ODR is harmless when compiled individually
+ctuOneDefinitionRuleViolation
+
+unusedFunction:src/util/*
+uninitStructMember:src/util/*
