@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-02-12 17:15:14
- * Last Modified Date: 2026-08-27 09:24:49
+ * Last Modified Date: 2026-09-02 14:06:35
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -160,22 +160,34 @@ static std::string parse_extra_use(const std::string& code) {
     std::string extra;
     if (code.find("ListNode") != std::string::npos) {
         extra += "#include \"../util/linked_list.h\"\n";
-        extra += "using util::ListNode;\n";
-        extra += "using util::to_linked_list;\n";
-        extra += "using util::to_vec;\n";
-        extra += "using util::to_string;\n";
-        extra += "using util::free_list;\n";
     }
     if (code.find("TreeNode") != std::string::npos) {
         extra += "#include \"../util/tree.h\"\n";
-        extra += "using util::TreeNode;\n";
-        extra += "using util::to_tree;\n";
-        extra += "using util::to_level_list;\n";
-        extra += "using util::to_string;\n";
-        extra += "using util::free_tree;\n";
     }
     if (code.find("Point") != std::string::npos) {
         extra += "#include \"../util/point.h\"\n";
+    }
+    return extra;
+}
+
+static std::string parse_extra_using(const std::string& code) {
+    std::string extra;
+    if (code.find("ListNode") != std::string::npos) {
+        extra += "using util::ListNode;\n";
+    }
+    if (code.find("TreeNode") != std::string::npos) {
+        extra += "using util::TreeNode;\n";
+    }
+    return extra;
+}
+
+static std::string parse_gtest_extra(const std::string& code) {
+    std::string extra;
+    if (code.find("ListNode") != std::string::npos) {
+        extra += "#include \"../util/linked_list_gtest.h\"\n";
+    }
+    if (code.find("TreeNode") != std::string::npos) {
+        extra += "#include \"../util/tree_gtest.h\"\n";
     }
     return extra;
 }
@@ -437,6 +449,8 @@ static void deal_problem(const fetcher::Problem& problem,
         replace_all(tpl, "__FILE_NAME__", file_name + ".cpp");
     }
     replace_all(tpl, "__EXTRA_USE__", parse_extra_use(default_code));
+    replace_all(tpl, "__EXTRA_USING__", parse_extra_using(default_code));
+    replace_all(tpl, "__GTEST_EXTRA__", parse_gtest_extra(default_code));
     replace_all(tpl, "__STL_INCLUDES__", parse_std_headers(default_code));
     replace_all(tpl, "__PROBLEM_LINK__",
                 std::string("https://leetcode.com/problems/") +
