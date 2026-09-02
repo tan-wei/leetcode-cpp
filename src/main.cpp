@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-02-12 17:15:14
- * Last Modified Date: 2026-09-02 14:06:35
+ * Last Modified Date: 2026-09-02 14:49:54
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -158,10 +158,15 @@ static std::string insert_return_in_code(const std::string& ret_type,
 
 static std::string parse_extra_use(const std::string& code) {
     std::string extra;
-    if (code.find("ListNode") != std::string::npos) {
+    bool has_list = code.find("ListNode") != std::string::npos;
+    bool has_tree = code.find("TreeNode") != std::string::npos;
+    if (has_list || has_tree) {
+        extra += "// Utility headers\n";
+    }
+    if (has_list) {
         extra += "#include \"../util/linked_list.h\"\n";
     }
-    if (code.find("TreeNode") != std::string::npos) {
+    if (has_tree) {
         extra += "#include \"../util/tree.h\"\n";
     }
     if (code.find("Point") != std::string::npos) {
@@ -183,10 +188,15 @@ static std::string parse_extra_using(const std::string& code) {
 
 static std::string parse_gtest_extra(const std::string& code) {
     std::string extra;
-    if (code.find("ListNode") != std::string::npos) {
+    bool has_list = code.find("ListNode") != std::string::npos;
+    bool has_tree = code.find("TreeNode") != std::string::npos;
+    if (has_list || has_tree) {
+        extra += "// gtest utility headers\n";
+    }
+    if (has_list) {
         extra += "#include \"../util/linked_list_gtest.h\"\n";
     }
-    if (code.find("TreeNode") != std::string::npos) {
+    if (has_tree) {
         extra += "#include \"../util/tree_gtest.h\"\n";
     }
     return extra;
