@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-01 19:58:40
- * Last Modified Date: 2026-09-01 20:12:38
+ * Last Modified Date: 2026-09-02 11:55:00
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -40,15 +40,20 @@
 // problem: https://leetcode.com/problems/add-two-numbers/
 // discuss: https://leetcode.com/problems/add-two-numbers/discuss/
 
+#include "../util/linked_list.h"
+
 #include <list>
+#include <memory>
 
 using namespace std;
-#include "../util/linked_list.h"
-using util::free_list;
 using util::ListNode;
 using util::to_linked_list;
 using util::to_string;
 using util::to_vec;
+
+#if defined(ENABLE_GTEST)
+#include "../util/linked_list_gtest.h"
+#endif
 
 // submission codes start here
 
@@ -71,13 +76,12 @@ using util::to_vec;
 class Solution {
 public:
     ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
-        ListNode* header = new ListNode(0);
-        ListNode* r = header;
+        auto header = std::make_unique<ListNode>(0);
+        ListNode* r = header.get();
         bool carry = false;
-        int sum = 0;
 
         while (l1 || l2 || carry) {
-            sum = 0;
+            int sum = 0;
             if (l1) {
                 sum += l1->val;
             }
@@ -85,8 +89,7 @@ public:
                 sum += l2->val;
             }
             if (carry) {
-                sum++;
-                carry = false;
+                ++sum;
             }
 
             if (sum >= 10) {
@@ -109,45 +112,38 @@ public:
 // submission codes end
 
 #if defined(ENABLE_GTEST)
-#include <gtest/gtest.h>
 
 TEST(Problem0002, Example1) {
-    GTEST_SKIP() << "Skipping test: we need more utilities to check equal";
-
     Solution solution;
 
     auto l1 = to_linked_list("[2,4,3]");
     auto l2 = to_linked_list("[5,6,4]");
+    auto expected = to_linked_list("[7,0,8]");
 
-    auto result = to_linked_list("[7,0,8]");
-
-    ASSERT_EQ(solution.addTwoNumbers(l1, l2), result);
+    auto* result = solution.addTwoNumbers(l1, l2);
+    EXPECT_PRED_FORMAT2(list_equal, result, expected);
 }
 
 TEST(Problem0002, Example2) {
-    GTEST_SKIP() << "Skipping test: we need more utilities to check equal";
-
     Solution solution;
 
     auto l1 = to_linked_list("[0]");
     auto l2 = to_linked_list("[0]");
+    auto expected = to_linked_list("[0]");
 
-    auto result = to_linked_list("[0]");
-
-    ASSERT_EQ(solution.addTwoNumbers(l1, l2), result);
+    auto* result = solution.addTwoNumbers(l1, l2);
+    EXPECT_PRED_FORMAT2(list_equal, result, expected);
 }
 
 TEST(Problem0002, Example3) {
-    GTEST_SKIP() << "Skipping test: we need more utilities to check equal";
-
     Solution solution;
 
     auto l1 = to_linked_list("[9,9,9,9,9,9,9]");
     auto l2 = to_linked_list("[9,9,9,9]");
+    auto expected = to_linked_list("[8,9,9,9,0,0,0,1]");
 
-    auto result = to_linked_list("[8,9,9,9,0,0,0,1]");
-
-    ASSERT_EQ(solution.addTwoNumbers(l1, l2), result);
+    auto* result = solution.addTwoNumbers(l1, l2);
+    EXPECT_PRED_FORMAT2(list_equal, result, expected);
 }
 
 #endif
