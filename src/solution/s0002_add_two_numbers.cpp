@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-01 19:58:40
- * Last Modified Date: 2026-09-02 11:55:00
+ * Last Modified Date: 2026-09-02 14:52:23
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -40,18 +40,19 @@
 // problem: https://leetcode.com/problems/add-two-numbers/
 // discuss: https://leetcode.com/problems/add-two-numbers/discuss/
 
-#include "../util/linked_list.h"
-
 #include <list>
 #include <memory>
 
+// Utility headers
+#include "../util/linked_list.h"
+
 using namespace std;
 using util::ListNode;
-using util::to_linked_list;
-using util::to_string;
-using util::to_vec;
 
 #if defined(ENABLE_GTEST)
+#include <gtest/gtest.h>
+
+// gtest utility headers
 #include "../util/linked_list_gtest.h"
 #endif
 
@@ -116,9 +117,9 @@ public:
 TEST(Problem0002, Example1) {
     Solution solution;
 
-    auto l1 = to_linked_list("[2,4,3]");
-    auto l2 = to_linked_list("[5,6,4]");
-    auto expected = to_linked_list("[7,0,8]");
+    auto l1 = util::to_linked_list("[2,4,3]");
+    auto l2 = util::to_linked_list("[5,6,4]");
+    auto expected = util::to_linked_list("[7,0,8]");
 
     auto* result = solution.addTwoNumbers(l1, l2);
     EXPECT_PRED_FORMAT2(list_equal, result, expected);
@@ -127,9 +128,9 @@ TEST(Problem0002, Example1) {
 TEST(Problem0002, Example2) {
     Solution solution;
 
-    auto l1 = to_linked_list("[0]");
-    auto l2 = to_linked_list("[0]");
-    auto expected = to_linked_list("[0]");
+    auto l1 = util::to_linked_list("[0]");
+    auto l2 = util::to_linked_list("[0]");
+    auto expected = util::to_linked_list("[0]");
 
     auto* result = solution.addTwoNumbers(l1, l2);
     EXPECT_PRED_FORMAT2(list_equal, result, expected);
@@ -138,9 +139,9 @@ TEST(Problem0002, Example2) {
 TEST(Problem0002, Example3) {
     Solution solution;
 
-    auto l1 = to_linked_list("[9,9,9,9,9,9,9]");
-    auto l2 = to_linked_list("[9,9,9,9]");
-    auto expected = to_linked_list("[8,9,9,9,0,0,0,1]");
+    auto l1 = util::to_linked_list("[9,9,9,9,9,9,9]");
+    auto l2 = util::to_linked_list("[9,9,9,9]");
+    auto expected = util::to_linked_list("[8,9,9,9,0,0,0,1]");
 
     auto* result = solution.addTwoNumbers(l1, l2);
     EXPECT_PRED_FORMAT2(list_equal, result, expected);
