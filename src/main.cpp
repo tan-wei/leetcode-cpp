@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-02-12 17:15:14
- * Last Modified Date: 2026-09-03 10:33:01
+ * Last Modified Date: 2026-09-03 17:48:43
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -298,14 +298,10 @@ static std::string build_desc(const std::string& content) {
 
     // HTML entities
     std::vector<std::pair<std::string, std::string>> entities = {
-        {"&amp;", "&"},          {"&nbsp;", " "},  {"&gt;", ">"},
-        {"&lt;", "<"},           {"&quot;", "\""}, {"&minus;", "-"},
-        {"&#39;", "'"},          {"&apos;", "'"},  {"&frasl;", "/"},
-        {"&le;", "\u{2264}"},    // ≤
-        {"&ge;", "\u{2265}"},    // ≥
-        {"&ldquo;", "\u{201c}"}, // "
-        {"&rdquo;", "\u{201d}"}, // "
-        {"&thinsp;", " "},
+        {"&amp;", "&"},    {"&nbsp;", " "},   {"&gt;", ">"},  {"&lt;", "<"},
+        {"&quot;", "\""},  {"&minus;", "-"},  {"&#39;", "'"}, {"&apos;", "'"},
+        {"&frasl;", "/"},  {"&le;", "<="},    {"&ge;", ">="}, {"&ldquo;", "\""},
+        {"&rdquo;", "\""}, {"&thinsp;", " "},
     };
     for (auto& pr : entities) {
         size_t pos = 0;
