@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-02-12 17:15:14
- * Last Modified Date: 2026-09-02 14:49:54
+ * Last Modified Date: 2026-09-03 10:33:01
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -278,45 +278,58 @@ static std::string parse_std_headers(const std::string& code) {
 }
 
 static std::string build_desc(const std::string& content) {
+    // Remove HTML tags (with or without attributes) — handles <tag>, </tag>,
+    // <tag attr="...">, <tag />
+    static const std::regex re_tag(R"(</?[a-zA-Z][^>]*>)");
+    // Replace <sup> with ^ (keep this specific one)
     std::string s = content;
-    std::vector<std::pair<std::string, std::string>> reps = {
-        {"<strong>", ""}, {"</strong>", ""}, {"<strong class=\"example\">", ""},
-        {"<em>", ""},     {"</em>", ""},     {"</p>", ""},
-        {"<p>", ""},      {"<b>", ""},       {"</b>", ""},
-        {"<pre>", ""},    {"</pre>", ""},    {"<ul>", ""},
-        {"</ul>", ""},    {"<li>", ""},      {"</li>", ""},
-        {"<code>", ""},   {"</code>", ""},   {"<i>", ""},
-        {"</i>", ""},     {"<sub>", ""},     {"</sub>", ""},
-        {"</sup>", ""},   {"<sup>", "^"},    {"&nbsp;", " "},
-        {"&gt;", ">"},    {"&lt;", "<"},     {"&quot;", "\""},
-        {"&minus;", "-"}, {"&#39;", "'"}};
-    for (auto& pr : reps) {
+    {
+        size_t pos = 0;
+        while ((pos = s.find("<sup>", pos)) != std::string::npos) {
+            s.replace(pos, 5, "^");
+            pos += 1;
+        }
+        pos = 0;
+        while ((pos = s.find("</sup>", pos)) != std::string::npos) {
+            s.replace(pos, 6, "");
+        }
+    }
+    s = std::regex_replace(s, re_tag, "");
+
+    // HTML entities
+    std::vector<std::pair<std::string, std::string>> entities = {
+        {"&amp;", "&"},          {"&nbsp;", " "},  {"&gt;", ">"},
+        {"&lt;", "<"},           {"&quot;", "\""}, {"&minus;", "-"},
+        {"&#39;", "'"},          {"&apos;", "'"},  {"&frasl;", "/"},
+        {"&le;", "\u{2264}"},    // ≤
+        {"&ge;", "\u{2265}"},    // ≥
+        {"&ldquo;", "\u{201c}"}, // "
+        {"&rdquo;", "\u{201d}"}, // "
+        {"&thinsp;", " "},
+    };
+    for (auto& pr : entities) {
         size_t pos = 0;
         while ((pos = s.find(pr.first, pos)) != std::string::npos) {
             s.replace(pos, pr.first.size(), pr.second);
             pos += pr.second.size();
         }
     }
-    // collapse double newlines
-    size_t p = 0;
-    while ((p = s.find("\n\n", p)) != std::string::npos) {
-        s.replace(p, 2, "\n");
+
+    // Collapse multiple newlines and format as comment lines
+    {
+        size_t p = 0;
+        while ((p = s.find("\n\n", p)) != std::string::npos) {
+            s.replace(p, 2, "\n");
+        }
     }
-    // replace internal newlines with "\n * " (do not prefix the very first
-    // line)
-    std::string needle = "\n";
-    std::string repl = "\n * ";
-    size_t pos = 0;
-    while ((pos = s.find(needle, pos)) != std::string::npos) {
-        s.replace(pos, needle.size(), repl);
-        pos += repl.size();
-    }
-    // remove <font ...> and </font> tags that may appear in descriptions
-    try {
-        s = std::regex_replace(s, std::regex("<font[^>]*>"), std::string());
-        s = std::regex_replace(s, std::regex("</font>"), std::string());
-    } catch (...) {
-        // ignore regex errors
+    {
+        std::string needle = "\n";
+        std::string repl = "\n * ";
+        size_t pos = 0;
+        while ((pos = s.find(needle, pos)) != std::string::npos) {
+            s.replace(pos, needle.size(), repl);
+            pos += repl.size();
+        }
     }
     return s;
 }
