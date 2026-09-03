@@ -3,15 +3,14 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-02 21:33:13
- * Last Modified Date: 2026-09-02 22:27:38
+ * Last Modified Date: 2026-09-03 19:32:06
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
 /**
  * [0003] Longest Substring Without Repeating Characters
  *
- * Given a string s, find the length of the longest <span
- * data-keyword="substring-nonempty">substring</span> without duplicate
+ * Given a string s, find the length of the longest substring without duplicate
  * characters.
  *
  * Example 1:
