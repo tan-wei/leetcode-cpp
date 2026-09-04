@@ -131,7 +131,7 @@ jobs:
               name: 'Macos Clang',
               cc: $(brew --prefix llvm@22)/bin/clang,
               cxx: $(brew --prefix llvm@22)/bin/clang++,
-              profiles: '-pr:h conan/clang21 -pr:h conan/libc++'
+              profiles: '-pr:h conan/clang22 -pr:h conan/libc++'
             }
     steps:
       - name: Checkout repository
