@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-06 12:35:52
- * Last Modified Date: 2026-09-06 15:29:51
+ * Last Modified Date: 2026-09-06 19:14:43
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -33,6 +33,7 @@
 // problem: https://leetcode.com/problems/reverse-integer/
 // discuss: https://leetcode.com/problems/reverse-integer/discuss/
 
+#include <limits>
 #include <utility>
 
 using namespace std;
@@ -51,6 +52,20 @@ public:
 
         return std::in_range<int>(result) ? static_cast<int>(result) : 0;
     }
+
+    int reverse2(int x) {
+        int result = 0;
+        while (x != 0) {
+            int digit = x % 10;
+            if ((result > std::numeric_limits<int>::max() / 10) ||
+                (result < std::numeric_limits<int>::min() / 10)) {
+                return 0;
+            }
+            result = result * 10 + digit;
+            x = x / 10;
+        }
+        return result;
+    }
 };
 
 // submission codes end
@@ -66,6 +81,7 @@ TEST(Problem0007, Example1) {
     auto result = 321;
 
     EXPECT_EQ(solution.reverse(x), result);
+    EXPECT_EQ(solution.reverse2(x), result);
 }
 
 TEST(Problem0007, Example2) {
@@ -76,6 +92,7 @@ TEST(Problem0007, Example2) {
     auto result = -321;
 
     EXPECT_EQ(solution.reverse(x), result);
+    EXPECT_EQ(solution.reverse2(x), result);
 }
 
 TEST(Problem0007, Example3) {
@@ -86,6 +103,7 @@ TEST(Problem0007, Example3) {
     auto result = 21;
 
     EXPECT_EQ(solution.reverse(x), result);
+    EXPECT_EQ(solution.reverse2(x), result);
 }
 
 TEST(Problem0007, EdgeCase1) {
@@ -96,6 +114,7 @@ TEST(Problem0007, EdgeCase1) {
     auto result = 0;
 
     EXPECT_EQ(solution.reverse(x), result);
+    EXPECT_EQ(solution.reverse2(x), result);
 }
 
 TEST(Problem0007, EdgeCase2) {
@@ -107,6 +126,7 @@ TEST(Problem0007, EdgeCase2) {
     auto result = 0;
 
     EXPECT_EQ(solution.reverse(x), result);
+    EXPECT_EQ(solution.reverse2(x), result);
 }
 
 TEST(Problem0007, EdgeCase3) {
@@ -118,6 +138,7 @@ TEST(Problem0007, EdgeCase3) {
     auto result = 0;
 
     EXPECT_EQ(solution.reverse(x), result);
+    EXPECT_EQ(solution.reverse2(x), result);
 }
 
 #endif
