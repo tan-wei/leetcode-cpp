@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-06 12:35:52
- * Last Modified Date: 2026-09-06 13:04:21
+ * Last Modified Date: 2026-09-06 15:29:51
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -33,8 +33,7 @@
 // problem: https://leetcode.com/problems/reverse-integer/
 // discuss: https://leetcode.com/problems/reverse-integer/discuss/
 
-#include <algorithm>
-#include <limits>
+#include <utility>
 
 using namespace std;
 
@@ -44,15 +43,13 @@ class Solution {
 public:
     int reverse(int x) {
         long long result = 0;
+
         while (x) {
             result = result * 10 + x % 10;
             x = x / 10;
         }
 
-        return result < std::numeric_limits<int>::min() ||
-                       result > std::numeric_limits<int>::max()
-                   ? 0
-                   : result;
+        return std::in_range<int>(result) ? static_cast<int>(result) : 0;
     }
 };
 
