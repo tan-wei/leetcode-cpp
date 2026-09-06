@@ -1,3 +1,0 @@
-CompileFlags:
-  # adjust for your compile_commands.json location
-  CompilationDatabase: build/Debug
