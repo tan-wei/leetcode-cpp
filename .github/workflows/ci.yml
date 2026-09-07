@@ -144,9 +144,9 @@ jobs:
       - name: Force clang to use homebrew libc++
         run: |
           mkdir ~/.config/clang
-          echo "-I/opt/homebrew/opt/llvm/include" > ~/.config/clang/clang++.cfg
-          echo "-L/opt/homebrew/opt/llvm/lib/c++" >> ~/.config/clang/clang++.cfg
-          echo "-L/opt/homebrew/opt/llvm/lib/unwind" >> ~/.config/clang/clang++.cfg
+          echo "-I$(brew --prefix llvm@22)/include" > ~/.config/clang/clang++.cfg
+          echo "-L$(brew --prefix llvm@22)/lib/c++" >> ~/.config/clang/clang++.cfg
+          echo "-L$(brew --prefix llvm@22)/lib/unwind" >> ~/.config/clang/clang++.cfg
           echo "-lunwind" >> ~/.config/clang/clang++.cfg
 
       - name: Setup uv
