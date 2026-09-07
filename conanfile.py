@@ -30,7 +30,7 @@ class Example(ConanFile):
 
     def requirements(self):
         self.requires("nlohmann_json/3.12.0")
-        self.requires("libcurl/8.18.0")
+        self.requires("libcurl/8.21.0")
         self.requires("gtest/1.18.0")
 
     def generate(self):
