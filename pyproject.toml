@@ -1,9 +1,9 @@
 [project]
-name = "cpp-project-template"
-version = "0.0.0"
+name = "leetcode-cpp"
+version = "0.0.1"
 description = ""
 authors = [
-  { name = "Your Name", email = "<you@example.com>" },
+  { name = "Wei Tan", email = "tanwei.winterreise@gmail.com" },
 ]
 license = "Unlicense"
 readme = "README.md"
