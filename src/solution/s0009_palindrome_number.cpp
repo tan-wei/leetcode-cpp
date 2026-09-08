@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-08 20:20:28
- * Last Modified Date: 2026-09-08 20:29:20
+ * Last Modified Date: 2026-09-08 20:37:34
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -43,19 +43,25 @@ using namespace std;
 class Solution {
 public:
     bool isPalindrome(int x) {
-        if (x < 0) {
+        if (x < 0 || (x != 0 && x % 10 == 0)) {
+            // Special cases
             return false;
         }
 
         int rev = 0;
-        int num = x;
 
-        while (num != 0) {
-            rev = rev * 10 + num % 10;
-            num /= 10;
+        while (rev < x) {
+            // Prevent from overflow
+            rev = rev * 10 + x % 10;
+            x = x / 10;
         }
 
-        return rev == x;
+        if (rev == x || (rev / 10) == x) {
+            // Prevent from overflow
+            return true;
+        } else {
+            return false;
+        }
     }
 };
 
@@ -88,6 +94,16 @@ TEST(Problem0009, Example3) {
     Solution solution;
 
     auto x = 10;
+
+    auto result = false;
+
+    EXPECT_EQ(solution.isPalindrome(x), result);
+}
+
+TEST(Problem0009, RuntimeErrorOverFlowCase1) {
+    Solution solution;
+
+    auto x = 1'234'567'899;
 
     auto result = false;
 
