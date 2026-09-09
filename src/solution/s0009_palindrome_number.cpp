@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-08 20:20:28
- * Last Modified Date: 2026-09-08 20:37:34
+ * Last Modified Date: 2026-09-09 19:03:08
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -48,7 +48,7 @@ public:
             return false;
         }
 
-        int rev = 0;
+        long long rev = 0;
 
         while (rev < x) {
             // Prevent from overflow
