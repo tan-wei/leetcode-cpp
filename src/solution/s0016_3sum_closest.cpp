@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-15 18:49:15
- * Last Modified Date: 2026-09-15 20:16:32
+ * Last Modified Date: 2026-09-15 20:24:41
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -36,6 +36,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <numeric>
 #include <vector>
 
 using namespace std;
@@ -46,12 +47,7 @@ class Solution {
 public:
     int threeSumClosest(vector<int>& nums, int target) {
         if (nums.size() <= 3) {
-            int sum = 0;
-            for (auto num : nums) {
-                sum += num;
-            }
-
-            return sum;
+            return accumulate(nums.begin(), nums.end(), 0);
         }
 
         sort(nums.begin(), nums.end());
