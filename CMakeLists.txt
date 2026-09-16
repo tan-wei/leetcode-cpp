@@ -68,7 +68,7 @@ if(NOT CMAKE_CROSSCOMPILING AND BUILD_TESTING)
     target_include_directories(leetcode_tests
                                PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
     target_compile_definitions(leetcode_tests PRIVATE ENABLE_GTEST=1)
-    target_link_libraries(leetcode_tests PRIVATE GTest::gtest_main
+    target_link_libraries(leetcode_tests PRIVATE GTest::gmock_main
                                                  CURL::libcurl)
     # Register individual GoogleTest cases with CTest so each gtest is reported
     # as a separate test (gtest_discover_tests requires the GoogleTest CMake
