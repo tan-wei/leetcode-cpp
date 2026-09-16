@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-16 20:01:14
- * Last Modified Date: 2026-09-16 20:39:07
+ * Last Modified Date: 2026-09-16 20:59:03
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -33,6 +33,7 @@
 // https://leetcode.com/problems/letter-combinations-of-a-phone-number/discuss/
 
 #include <algorithm>
+#include <iterator>
 #include <string>
 #include <vector>
 
