@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-01 19:58:40
- * Last Modified Date: 2026-09-02 14:52:23
+ * Last Modified Date: 2026-09-18 20:48:25
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -46,13 +46,6 @@
 
 using namespace std;
 using util::ListNode;
-
-#if defined(ENABLE_GTEST)
-#include <gtest/gtest.h>
-
-// gtest utility headers
-#include "../util/linked_list_gtest.h"
-#endif
 
 // submission codes start here
 
@@ -111,6 +104,10 @@ public:
 // submission codes end
 
 #if defined(ENABLE_GTEST)
+#include <gtest/gtest.h>
+
+// gtest utility headers
+#include "../util/linked_list_gtest.h"
 
 TEST(Problem0002, Example1) {
     Solution solution;
