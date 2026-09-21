@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-21 07:31:13
- * Last Modified Date: 2026-09-21 07:50:43
+ * Last Modified Date: 2026-09-21 08:24:31
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -50,8 +50,8 @@ public:
             vector<string> result_i = generateParenthesis(i);
             vector<string> result_n_1_i = generateParenthesis(n - 1 - i);
 
-            for (auto s_left : result_i) {
-                for (auto s_right : result_n_1_i) {
+            for (const auto& s_left : result_i) {
+                for (const auto& s_right : result_n_1_i) {
                     result.emplace_back("(" + s_left + ")" + s_right);
                 }
             }
