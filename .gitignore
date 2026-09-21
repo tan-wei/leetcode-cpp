@@ -82,3 +82,4 @@ CMakeUserPresets.json
 compile_commands.json
 .clangd
 .ccls
+.ccls-cache/
