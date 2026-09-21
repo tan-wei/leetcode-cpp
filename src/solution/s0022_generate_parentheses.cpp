@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-21 07:31:13
- * Last Modified Date: 2026-09-21 08:24:31
+ * Last Modified Date: 2026-09-21 17:04:59
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -28,6 +28,8 @@
 // problem: https://leetcode.com/problems/generate-parentheses/
 // discuss: https://leetcode.com/problems/generate-parentheses/discuss/
 
+#include <algorithm>
+#include <iterator>
 #include <string>
 #include <vector>
 
@@ -51,9 +53,11 @@ public:
             vector<string> result_n_1_i = generateParenthesis(n - 1 - i);
 
             for (const auto& s_left : result_i) {
-                for (const auto& s_right : result_n_1_i) {
-                    result.emplace_back("(" + s_left + ")" + s_right);
-                }
+                transform(result_n_1_i.cbegin(), result_n_1_i.cend(),
+                          back_inserter(result),
+                          [&s_left](const auto& s_right) {
+                              return "(" + s_left + ")" + s_right;
+                          });
             }
         }
 
