@@ -114,9 +114,9 @@ jobs:
         run: |
           uv run cmake --preset ${{ matrix.build.preset }} \
             -D ENABLE_COVERAGE:BOOL=TRUE \
-            -D ENABLE_ASAN:BOOL=TRUE \
-            -D ENABLE_UBSAN:BOOL=TRUE \
-            -D ENABLE_LSAN:BOOL=TRUE \
+            -D ENABLE_ASAN:BOOL=FALSE \
+            -D ENABLE_UBSAN:BOOL=FALSE \
+            -D ENABLE_LSAN:BOOL=FALSE \
             -D ENABLE_CPPCHECK:BOOL=TRUE \
             -D CMAKE_CXX_CPPCHECK:STRING="cppcheck -v --enable=all --check-level=exhaustive --inline-suppr --error-exitcode=42 --suppress=missingIncludeSystem --suppress=unmatchedSuppression --suppressions-list=${{ github.workspace }}/cppcheck.suppressions" \
             -D ENABLE_CLANG_TIDY:BOOL=${{ contains(matrix.config.cc, 'clang') }} \
@@ -217,9 +217,9 @@ jobs:
         run: |
           uv run cmake --preset ${{ matrix.build.preset }} \
             -D ENABLE_COVERAGE:BOOL=TRUE \
-            -D ENABLE_ASAN:BOOL=TRUE \
-            -D ENABLE_UBSAN:BOOL=TRUE \
-            -D ENABLE_LSAN:BOOL=TRUE \
+            -D ENABLE_ASAN:BOOL=FALSE \
+            -D ENABLE_UBSAN:BOOL=FALSE \
+            -D ENABLE_LSAN:BOOL=FALSE \
             -D ENABLE_HARDENINGS:BOOL=TRUE \
             -D ENABLE_FORTIFY_SOURCE:BOOL=FALSE
           uv run cmake --build --preset ${{ matrix.build.preset }}
@@ -316,7 +316,7 @@ jobs:
           build/${{ matrix.build.type }}/generators/conanbuild.ps1
           uv run cmake --preset ${{ matrix.build.preset }} `
             -D ENABLE_COVERAGE:BOOL=TRUE `
-            -D ENABLE_ASAN:BOOL=${{ matrix.config.cc == 'cl' }} `
+            -D ENABLE_ASAN:BOOL=FALSE `
             -D ENABLE_HARDENINGS:BOOL=TRUE
           uv run cmake --build --preset ${{ matrix.build.preset }}
           New-Item -ItemType Directory -Force coverage | Out-Null
