@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-18 20:17:17
- * Last Modified Date: 2026-09-18 21:07:52
+ * Last Modified Date: 2026-09-22 09:30:30
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -100,7 +100,7 @@ TEST(Problem0019, Example1) {
 
     auto result = util::to_linked_list("[1,2,3,5]");
 
-    EXPECT_PRED_FORMAT2(list_equal, solution.removeNthFromEnd(head, n), result);
+    EXPECT_EQ_LINKED_LIST(solution.removeNthFromEnd(head, n), result);
 }
 
 TEST(Problem0019, Example2) {
@@ -111,7 +111,7 @@ TEST(Problem0019, Example2) {
 
     auto result = util::to_linked_list("[]");
 
-    EXPECT_PRED_FORMAT2(list_equal, solution.removeNthFromEnd(head, n), result);
+    EXPECT_EQ_LINKED_LIST(solution.removeNthFromEnd(head, n), result);
 }
 
 TEST(Problem0019, Example3) {
@@ -122,7 +122,7 @@ TEST(Problem0019, Example3) {
 
     auto result = util::to_linked_list("[1]");
 
-    EXPECT_PRED_FORMAT2(list_equal, solution.removeNthFromEnd(head, n), result);
+    EXPECT_EQ_LINKED_LIST(solution.removeNthFromEnd(head, n), result);
 }
 
 #endif

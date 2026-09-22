@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-01 19:58:40
- * Last Modified Date: 2026-09-18 20:48:25
+ * Last Modified Date: 2026-09-22 09:31:24
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -117,7 +117,8 @@ TEST(Problem0002, Example1) {
     auto expected = util::to_linked_list("[7,0,8]");
 
     auto* result = solution.addTwoNumbers(l1, l2);
-    EXPECT_PRED_FORMAT2(list_equal, result, expected);
+
+    EXPECT_EQ_LINKED_LIST(result, expected);
 }
 
 TEST(Problem0002, Example2) {
@@ -128,7 +129,8 @@ TEST(Problem0002, Example2) {
     auto expected = util::to_linked_list("[0]");
 
     auto* result = solution.addTwoNumbers(l1, l2);
-    EXPECT_PRED_FORMAT2(list_equal, result, expected);
+
+    EXPECT_EQ_LINKED_LIST(result, expected);
 }
 
 TEST(Problem0002, Example3) {
@@ -139,7 +141,8 @@ TEST(Problem0002, Example3) {
     auto expected = util::to_linked_list("[8,9,9,9,0,0,0,1]");
 
     auto* result = solution.addTwoNumbers(l1, l2);
-    EXPECT_PRED_FORMAT2(list_equal, result, expected);
+
+    EXPECT_EQ_LINKED_LIST(result, expected);
 }
 
 #endif

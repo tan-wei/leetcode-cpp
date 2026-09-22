@@ -10,8 +10,8 @@ inline void PrintTo(const util::ListNode* h, std::ostream* os) {
     *os << util::to_string(h);
 }
 
-// GTest predicate formatter -- enables EXPECT_PRED_FORMAT2(list_equal, ...)
-// with automatic diff output on failure
+// GTest predicate formatter -- used internally by EXPECT_EQ_LINKED_LIST
+// and ASSERT_EQ_LINKED_LIST macros below.
 inline ::testing::AssertionResult list_equal(
     const char* a_expr, const char* b_expr, const util::ListNode* a,
     const util::ListNode* b) {
@@ -35,5 +35,14 @@ inline ::testing::AssertionResult list_equal(
     }
     return ::testing::AssertionSuccess();
 }
+
+// Convenience macros so tests can write:
+//   EXPECT_EQ_LINKED_LIST(result, expected);
+// instead of the verbose:
+//   EXPECT_PRED_FORMAT2(list_equal, result, expected);
+#define EXPECT_EQ_LINKED_LIST(actual, expected) \
+    EXPECT_PRED_FORMAT2(list_equal, actual, expected)
+#define ASSERT_EQ_LINKED_LIST(actual, expected) \
+    ASSERT_PRED_FORMAT2(list_equal, actual, expected)
 
 #endif // LEETCODE_UTIL_LINKED_LIST_GTEST_H

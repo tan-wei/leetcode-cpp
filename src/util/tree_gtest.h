@@ -10,8 +10,8 @@ inline void PrintTo(const util::TreeNode* h, std::ostream* os) {
     *os << util::to_string(const_cast<util::TreeNode*>(h));
 }
 
-// GTest predicate formatter -- enables EXPECT_PRED_FORMAT2(tree_equal, ...)
-// with automatic diff output on failure
+// GTest predicate formatter -- used internally by EXPECT_EQ_TREE
+// and ASSERT_EQ_TREE macros below.
 inline ::testing::AssertionResult tree_equal(
     const char* a_expr, const char* b_expr, const util::TreeNode* a,
     const util::TreeNode* b) {
@@ -41,5 +41,14 @@ inline ::testing::AssertionResult tree_equal(
     }
     return tree_equal(a_expr, b_expr, a->right, b->right);
 }
+
+// Convenience macros so tests can write:
+//   EXPECT_EQ_TREE(result, expected);
+// instead of the verbose:
+//   EXPECT_PRED_FORMAT2(tree_equal, result, expected);
+#define EXPECT_EQ_TREE(actual, expected) \
+    EXPECT_PRED_FORMAT2(tree_equal, actual, expected)
+#define ASSERT_EQ_TREE(actual, expected) \
+    ASSERT_PRED_FORMAT2(tree_equal, actual, expected)
 
 #endif // LEETCODE_UTIL_TREE_GTEST_H

@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-20 08:21:38
- * Last Modified Date: 2026-09-20 08:34:26
+ * Last Modified Date: 2026-09-22 09:30:40
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -120,8 +120,7 @@ TEST(Problem0021, Example1) {
 
     auto result = util::to_linked_list("[1,1,2,3,4,4]");
 
-    EXPECT_PRED_FORMAT2(list_equal, solution.mergeTwoLists(list1, list2),
-                        result);
+    EXPECT_EQ_LINKED_LIST(solution.mergeTwoLists(list1, list2), result);
 }
 
 TEST(Problem0021, Example2) {
@@ -132,8 +131,7 @@ TEST(Problem0021, Example2) {
 
     auto result = util::to_linked_list("[]");
 
-    EXPECT_PRED_FORMAT2(list_equal, solution.mergeTwoLists(list1, list2),
-                        result);
+    EXPECT_EQ_LINKED_LIST(solution.mergeTwoLists(list1, list2), result);
 }
 
 TEST(Problem0021, Example3) {
@@ -144,8 +142,7 @@ TEST(Problem0021, Example3) {
 
     auto result = util::to_linked_list("[0]");
 
-    EXPECT_PRED_FORMAT2(list_equal, solution.mergeTwoLists(list1, list2),
-                        result);
+    EXPECT_EQ_LINKED_LIST(solution.mergeTwoLists(list1, list2), result);
 }
 
 TEST(Problem0021, AddtionalCase1) {
@@ -156,8 +153,7 @@ TEST(Problem0021, AddtionalCase1) {
 
     auto result = util::to_linked_list("[0]");
 
-    EXPECT_PRED_FORMAT2(list_equal, solution.mergeTwoLists(list1, list2),
-                        result);
+    EXPECT_EQ_LINKED_LIST(solution.mergeTwoLists(list1, list2), result);
 }
 
 #endif
