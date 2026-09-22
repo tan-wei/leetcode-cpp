@@ -80,10 +80,21 @@ cppcheck:
     COMPILE_COMMANDS_PATH=build/{{ build_type }}/compile_commands.json; if [ ! -f "$COMPILE_COMMANDS_PATH" ]; then echo "compile_commands.json not found; run 'just configure' first"; exit 1; fi; cppcheck --project="$COMPILE_COMMANDS_PATH" -v --enable=all --check-level=exhaustive --inline-suppr --suppressions-list=cppcheck.suppressions || true
 
 # Run the compiled leetcode_cpp executable. Depends on `build` so the binary
-
 # is up-to-date. Override `run_binary` or `build_type` locally if needed.
 run *args: build
     uv run ./build/{{ build_type }}/{{ run_binary }} {{ args }} ${RUN_ARGS:-}
+
+# Regenerate compile_commands.json (compilation database) by re-running CMake
+# configure. Run this after `just run solve <id>` or whenever new solution
+# files are added so that clangd / your IDE picks up the new translation units.
+comdb: configure
+    @echo "compile_commands.json regenerated."
+
+# Solve (move) problem <id> from src/problem/ to src/solution/, then regenerate
+# the compilation database so the new file appears in compile_commands.json.
+solve id:
+    just run solve {{id}}
+    just comdb
 
 # Cleaning targets
 # - `clean-setup`: remove setup artifacts (virtualenv, pre-commit hooks)
