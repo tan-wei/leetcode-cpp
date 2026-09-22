@@ -12,7 +12,8 @@ We use `just` to make it easy to install, run and test:
   5. `just run`: Run the main problem get program. With no arguments it stays interactive; with arguments it runs the command directly.
   6. `just test`: Run tests for whole projects
   7. `just cppcheck`: Run cppcheck
-  8. `just clean-all`: Remove all generated files
+  8. `just coverage`: Configure with coverage enabled, build, test, and write reports under `coverage/`
+  9. `just clean-all`: Remove all generated files
 
 
 ## Usage

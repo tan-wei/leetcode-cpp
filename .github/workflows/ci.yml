@@ -88,6 +88,7 @@ jobs:
           -s:h build_type=${{ matrix.build.type }}
 
       - name: Configure
+        if: matrix.build.type != 'Debug'
         run: >
           uv run cmake --preset ${{ matrix.build.preset }}
           -D ENABLE_COVERAGE:BOOL=${{ matrix.build.type == 'Debug' }}
@@ -101,16 +102,29 @@ jobs:
           -D ENABLE_FORTIFY_SOURCE:BOOL=${{ matrix.build.type != 'Debug' }}
 
       - name: Build
+        if: matrix.build.type != 'Debug'
         run: uv run cmake --build --preset ${{ matrix.build.preset }}
 
       - name: Run tests
+        if: matrix.build.type != 'Debug'
         run: uv run ctest --preset ${{ matrix.build.preset }}
 
       - name: Collect test coverage
         if: matrix.build.type == 'Debug'
-        env:
-          GCOV: ${{ matrix.config.gcov }}
-        run: uv run gcovr
+        run: |
+          uv run cmake --preset ${{ matrix.build.preset }} \
+            -D ENABLE_COVERAGE:BOOL=TRUE \
+            -D ENABLE_ASAN:BOOL=TRUE \
+            -D ENABLE_UBSAN:BOOL=TRUE \
+            -D ENABLE_LSAN:BOOL=TRUE \
+            -D ENABLE_CPPCHECK:BOOL=TRUE \
+            -D CMAKE_CXX_CPPCHECK:STRING="cppcheck -v --enable=all --check-level=exhaustive --inline-suppr --error-exitcode=42 --suppress=missingIncludeSystem --suppress=unmatchedSuppression --suppressions-list=${{ github.workspace }}/cppcheck.suppressions" \
+            -D ENABLE_CLANG_TIDY:BOOL=${{ contains(matrix.config.cc, 'clang') }} \
+            -D ENABLE_HARDENINGS:BOOL=TRUE \
+            -D ENABLE_FORTIFY_SOURCE:BOOL=FALSE
+          uv run cmake --build --preset ${{ matrix.build.preset }}
+          uv run ctest --preset ${{ matrix.build.preset }}
+          uv run gcovr --gcov-executable '${{ matrix.config.gcov }}'
 
   build_macos:
     name: ${{ matrix.config.name }} ${{ matrix.build.type }}
@@ -180,6 +194,7 @@ jobs:
           -s:h build_type=${{ matrix.build.type }}
 
       - name: Configure
+        if: matrix.build.type != 'Debug'
         run: >
           uv run cmake --preset ${{ matrix.build.preset }}
           -D ENABLE_COVERAGE:BOOL=${{ matrix.build.type == 'Debug' }}
@@ -190,14 +205,26 @@ jobs:
           -D ENABLE_FORTIFY_SOURCE:BOOL=${{ matrix.build.type != 'Debug' }}
 
       - name: Build
+        if: matrix.build.type != 'Debug'
         run: uv run cmake --build --preset ${{ matrix.build.preset }}
 
       - name: Run tests
+        if: matrix.build.type != 'Debug'
         run: uv run ctest --preset ${{ matrix.build.preset }}
 
       - name: Collect test coverage
         if: matrix.build.type == 'Debug'
-        run: GCOV="$(brew --prefix llvm@22)/bin/llvm-cov gcov" uv run gcovr
+        run: |
+          uv run cmake --preset ${{ matrix.build.preset }} \
+            -D ENABLE_COVERAGE:BOOL=TRUE \
+            -D ENABLE_ASAN:BOOL=TRUE \
+            -D ENABLE_UBSAN:BOOL=TRUE \
+            -D ENABLE_LSAN:BOOL=TRUE \
+            -D ENABLE_HARDENINGS:BOOL=TRUE \
+            -D ENABLE_FORTIFY_SOURCE:BOOL=FALSE
+          uv run cmake --build --preset ${{ matrix.build.preset }}
+          uv run ctest --preset ${{ matrix.build.preset }}
+          uv run gcovr --gcov-executable "$(brew --prefix llvm@22)/bin/llvm-cov gcov"
 
   build_windows:
     name: ${{ matrix.config.name }} ${{ matrix.build.type }}
@@ -265,16 +292,18 @@ jobs:
           -s:h build_type=${{ matrix.build.type }}
 
       - name: Configure
+        if: matrix.build.type != 'Debug'
         run: >
-          build/${{ matrix.build.Type }}/generators/conanbuild.ps1 &&
+          build/${{ matrix.build.type }}/generators/conanbuild.ps1 &&
           uv run cmake --preset ${{ matrix.build.preset }}
           -D ENABLE_COVERAGE:BOOL=${{ matrix.build.type == 'Debug' }}
           -D ENABLE_ASAN:BOOL=${{ matrix.build.type == 'Debug' && matrix.config.cc == 'cl' }}
           -D ENABLE_HARDENINGS:BOOL=TRUE
 
       - name: Build
+        if: matrix.build.type != 'Debug'
         run: >
-          build/${{ matrix.build.Type }}/generators/conanbuild.ps1 &&
+          build/${{ matrix.build.type }}/generators/conanbuild.ps1 &&
           uv run cmake --build --preset ${{ matrix.build.preset }}
 
       - name: Run tests
@@ -283,9 +312,15 @@ jobs:
 
       - name: Run tests and collect test coverage
         if: matrix.build.type == 'Debug'
-        run: >
-          build/${{ matrix.build.Type }}/generators/conanbuild.ps1 &&
-          & "C:\Program Files\OpenCppCoverage\OpenCppCoverage.exe" --export_type cobertura:coverage/cobertura.xml --cover_children -- uv run ctest --preset ${{ matrix.build.preset }}
+        run: |
+          build/${{ matrix.build.type }}/generators/conanbuild.ps1
+          uv run cmake --preset ${{ matrix.build.preset }} `
+            -D ENABLE_COVERAGE:BOOL=TRUE `
+            -D ENABLE_ASAN:BOOL=${{ matrix.config.cc == 'cl' }} `
+            -D ENABLE_HARDENINGS:BOOL=TRUE
+          uv run cmake --build --preset ${{ matrix.build.preset }}
+          New-Item -ItemType Directory -Force coverage | Out-Null
+          OpenCppCoverage --export_type cobertura:coverage/cobertura.xml --cover_children -- uv run ctest --preset ${{ matrix.build.preset }}
 
   codeql:
     name: CodeQL

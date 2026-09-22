@@ -14,6 +14,7 @@ enable_cppcheck := "False"
 enable_clang_tidy := "False"
 enable_coverage := "False"
 run_binary := "leetcode_cpp"
+gcov := "auto"
 
 # Show available recipes
 help:
@@ -116,9 +117,28 @@ clean-all: clean-setup clean-build
 
 clean: clean-build
 
-# Collect coverage (use appropriate gcov value for your toolchain)
+# Configure, build, test, and collect coverage for the current platform.
 coverage:
-    GCOV="gcov" uv run gcovr
+    @just build_type={{ build_type }} preset={{ preset }} enable_cppcheck={{ enable_cppcheck }} enable_clang_tidy={{ enable_clang_tidy }} enable_coverage=True cache_option={{ cache_option }} configure
+    @just build_type={{ build_type }} preset={{ preset }} build
+    @just build_type={{ build_type }} preset={{ preset }} gcov='{{ gcov }}' coverage-report
+
+# Collect coverage from an already-built coverage configuration.
+coverage-report:
+        mkdir -p coverage
+        if [ "${OS:-}" = "Windows_NT" ]; then \
+            if ! command -v OpenCppCoverage >/dev/null 2>&1; then echo "OpenCppCoverage not found; install it to collect MSVC coverage"; exit 2; fi; \
+            OpenCppCoverage --export_type cobertura:coverage/cobertura.xml --cover_children -- uv run ctest --preset {{ preset }}; \
+        else \
+            selected_gcov='{{ gcov }}'; \
+            if [ "$selected_gcov" = "auto" ] || [ -z "$selected_gcov" ]; then \
+                if [ -n "${GCOV:-}" ]; then selected_gcov="$GCOV"; \
+                elif [[ "{{ CXX }}" == *clang* ]] && command -v llvm-cov >/dev/null 2>&1; then selected_gcov="llvm-cov gcov"; \
+                else selected_gcov="gcov"; fi; \
+            fi; \
+            uv run ctest --preset {{ preset }}; \
+            uv run gcovr --gcov-executable "$selected_gcov"; \
+        fi
 
 # Format C/C++ sources under src/ using clang-format
 fmt:
