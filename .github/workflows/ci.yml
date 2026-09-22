@@ -124,6 +124,7 @@ jobs:
             -D ENABLE_FORTIFY_SOURCE:BOOL=FALSE
           uv run cmake --build --preset ${{ matrix.build.preset }}
           uv run ctest --preset ${{ matrix.build.preset }}
+          mkdir -p coverage
           uv run gcovr --gcov-executable '${{ matrix.config.gcov }}'
 
   build_macos:
@@ -224,6 +225,7 @@ jobs:
             -D ENABLE_FORTIFY_SOURCE:BOOL=FALSE
           uv run cmake --build --preset ${{ matrix.build.preset }}
           uv run ctest --preset ${{ matrix.build.preset }}
+          mkdir -p coverage
           uv run gcovr --gcov-executable "$(brew --prefix llvm@22)/bin/llvm-cov gcov"
 
   build_windows:
@@ -320,7 +322,9 @@ jobs:
             -D ENABLE_HARDENINGS:BOOL=TRUE
           uv run cmake --build --preset ${{ matrix.build.preset }}
           New-Item -ItemType Directory -Force coverage | Out-Null
-          OpenCppCoverage --export_type cobertura:coverage/cobertura.xml --cover_children -- uv run ctest --preset ${{ matrix.build.preset }}
+          $openCppCoverage = "${env:ProgramFiles}\OpenCppCoverage\OpenCppCoverage.exe"
+          if (!(Test-Path $openCppCoverage)) { throw "OpenCppCoverage not found at $openCppCoverage" }
+          & $openCppCoverage --export_type cobertura:coverage/cobertura.xml --cover_children -- uv run ctest --preset ${{ matrix.build.preset }}
 
   codeql:
     name: CodeQL
