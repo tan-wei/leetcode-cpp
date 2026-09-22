@@ -1,6 +1,10 @@
 name: Commitlint
 
-on: [pull_request]
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   check-history:
@@ -22,5 +26,10 @@ jobs:
       - name: Install commitlint
         run: npm ci
 
-      - name: Check history
+      - name: Check history (pull request)
+        if: github.event_name == 'pull_request'
         run: npx commitlint --from origin/${{ github.base_ref }} --to origin/${{ github.head_ref }}
+
+      - name: Check history (push)
+        if: github.event_name == 'push'
+        run: npx commitlint --from ${{ github.event.before }} --to HEAD
