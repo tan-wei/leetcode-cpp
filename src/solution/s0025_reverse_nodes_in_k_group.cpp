@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-24 19:39:22
- * Last Modified Date: 2026-09-24 21:33:51
+ * Last Modified Date: 2026-09-24 21:55:20
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -79,7 +79,6 @@ public:
         while (left) {
             auto cnt = k;
             auto right = left->next;
-            auto cur = left;
 
             while (cnt-- && right) {
                 stk.push(right);
@@ -93,8 +92,9 @@ public:
             /* First, left->next is the top of stack */
 
             left->next = stk.top();
-            cur = left->next;
             stk.pop();
+
+            auto cur = left->next;
 
             while (!stk.empty()) {
                 cur->next = stk.top();
