@@ -41,6 +41,7 @@ using namespace std;
 
 class Solution {
 public:
+    // cppcheck-suppress passedByValue
     int strStr(string haystack, string needle) {
         auto hl = haystack.length();
         auto nl = needle.length();
