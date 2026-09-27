@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-26 11:39:56
- * Last Modified Date: 2026-09-26 19:57:28
+ * Last Modified Date: 2026-09-27 17:14:14
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -93,8 +93,6 @@ TEST(Problem0027, Example1) {
     EXPECT_THAT(vector<int>(nums.begin(), nums.begin() + result.size()),
                 ::testing::UnorderedElementsAreArray(vector<int>(
                     result.begin(), result.begin() + result.size())));
-    // EXPECT_EQ(vector<int>(nums.begin(), nums.begin() + result.size()),
-    //           vector<int>(result.begin(), result.begin() + result.size()));
 }
 
 TEST(Problem0027, Example2) {
@@ -109,8 +107,6 @@ TEST(Problem0027, Example2) {
     EXPECT_THAT(vector<int>(nums.begin(), nums.begin() + result.size()),
                 ::testing::UnorderedElementsAreArray(vector<int>(
                     result.begin(), result.begin() + result.size())));
-    // EXPECT_EQ(vector<int>(nums.begin(), nums.begin() + result.size()),
-    //           vector<int>(result.begin(), result.begin() + result.size()));
 }
 
 #endif
