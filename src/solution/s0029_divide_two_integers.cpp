@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-28 18:41:54
- * Last Modified Date: 2026-09-28 19:32:48
+ * Last Modified Date: 2026-09-28 19:36:45
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -57,6 +57,7 @@ public:
             (divisor < 0) ? -static_cast<unsigned int>(divisor) : divisor;
         unsigned int abs_dividend =
             (dividend < 0) ? -static_cast<unsigned int>(dividend) : dividend;
+
         unsigned int result = 0;
 
         for (int i = 31; i >= 0; i--) {
