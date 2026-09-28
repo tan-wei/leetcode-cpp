@@ -1,5 +1,8 @@
 # My Leetcode Solution in C++
 
+[![CI](https://github.com/tan-wei/leetcode-cpp/actions/workflows/ci.yml/badge.svg)](https://github.com/tan-wei/leetcode-cpp/actions/workflows/ci.yml)
+[![Coverage](https://codecov.io/gh/tan-wei/leetcode-cpp/graph/badge.svg)](https://codecov.io/gh/tan-wei/leetcode-cpp)
+
 NOTE: Insipired by [original repository](https://github.com/tan-wei/leetcode-rust), thanks the original author and contributors of it!
 
 ## How to use
