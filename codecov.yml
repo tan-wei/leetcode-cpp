@@ -1,0 +1,32 @@
+codecov:
+  require_ci_to_pass: true
+
+ignore:
+  - "src/main.cpp"
+  - "src/fetcher.cpp"
+  - "src/fetcher.h"
+  - "src/runner.cpp"
+  - "src/util"
+
+coverage:
+  precision: 2
+  round: down
+  range: "70...100"
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+        paths:
+          - "src/solution"
+    patch:
+      default:
+        target: auto
+        threshold: 1%
+        paths:
+          - "src/solution"
+
+comment:
+  layout: "reach,diff,flags,tree"
+  behavior: default
+  require_changes: false
