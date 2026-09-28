@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-28 18:41:54
- * Last Modified Date: 2026-09-28 19:17:49
+ * Last Modified Date: 2026-09-28 19:32:48
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -53,9 +53,11 @@ public:
         }
 
         bool sign = (dividend > 0) ^ (divisor > 0);
-        unsigned int abs_divisor = (divisor < 0) ? -divisor : divisor;
-        unsigned int abs_dividend = (dividend < 0) ? -dividend : dividend;
-        int result = 0;
+        unsigned int abs_divisor =
+            (divisor < 0) ? -static_cast<unsigned int>(divisor) : divisor;
+        unsigned int abs_dividend =
+            (dividend < 0) ? -static_cast<unsigned int>(dividend) : dividend;
+        unsigned int result = 0;
 
         for (int i = 31; i >= 0; i--) {
             if ((abs_dividend >> i) >= abs_divisor) {
@@ -65,12 +67,7 @@ public:
                 result = result << 1;
             }
         }
-
-        if (sign) {
-            result = -result;
-        }
-
-        return result;
+        return sign ? -static_cast<int>(result) : static_cast<int>(result);
     }
 };
 
