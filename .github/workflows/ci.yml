@@ -127,6 +127,13 @@ jobs:
           mkdir -p coverage
           uv run gcovr --gcov-executable '${{ matrix.config.gcov }}'
 
+      - name: Upload coverage to Codecov
+        if: matrix.build.type == 'Debug'
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage/cobertura.xml
+          fail_ci_if_error: false
+
   build_macos:
     name: ${{ matrix.config.name }} ${{ matrix.build.type }}
     runs-on: macos-26
@@ -228,6 +235,13 @@ jobs:
           mkdir -p coverage
           uv run gcovr --gcov-executable "$(brew --prefix llvm@22)/bin/llvm-cov gcov"
 
+      - name: Upload coverage to Codecov
+        if: matrix.build.type == 'Debug'
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage/cobertura.xml
+          fail_ci_if_error: false
+
   build_windows:
     name: ${{ matrix.config.name }} ${{ matrix.build.type }}
     runs-on: windows-2025
@@ -325,6 +339,13 @@ jobs:
           $openCppCoverage = "${env:ProgramFiles}\OpenCppCoverage\OpenCppCoverage.exe"
           if (!(Test-Path $openCppCoverage)) { throw "OpenCppCoverage not found at $openCppCoverage" }
           & $openCppCoverage --export_type cobertura:coverage/cobertura.xml --cover_children -- uv run ctest --preset ${{ matrix.build.preset }}
+
+      - name: Upload coverage to Codecov
+        if: matrix.build.type == 'Debug'
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage/cobertura.xml
+          fail_ci_if_error: false
 
   codeql:
     name: CodeQL
