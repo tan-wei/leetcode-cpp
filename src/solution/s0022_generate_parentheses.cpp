@@ -93,4 +93,15 @@ TEST(Problem0022, Example2) {
                 ::testing::UnorderedElementsAreArray(result));
 }
 
+TEST(Problem0022, AdditionalCaseTwoPairs) {
+    Solution solution;
+
+    auto n = 2;
+
+    vector<string> result = {"(())", "()()"};
+
+    EXPECT_THAT(solution.generateParenthesis(n),
+                ::testing::UnorderedElementsAreArray(result));
+}
+
 #endif
