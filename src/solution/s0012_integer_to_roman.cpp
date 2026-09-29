@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-11 23:16:33
- * Last Modified Date: 2026-09-11 23:26:14
+ * Last Modified Date: 2026-09-29 15:42:36
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -74,7 +74,9 @@
  * decimal places
  * Example 2:
  * Input: num = 58
- * Output: "LVIII" Explanation: 50 = L
+ * Output: "LVIII"
+ * Explanation:
+ * 50 = L
  *  8 = VIII
  * Example 3:
  * Input: num = 1994
@@ -183,6 +185,26 @@ TEST(Problem0012, Example3) {
     auto num = 1'994;
 
     auto result = "MCMXCIV"s;
+
+    EXPECT_EQ(solution.intToRoman(num), result);
+}
+
+TEST(Problem0012, AdditionalCaseFourHundredAndSubtractiveForms) {
+    Solution solution;
+
+    auto num = 444;
+
+    auto result = "CDXLIV"s;
+
+    EXPECT_EQ(solution.intToRoman(num), result);
+}
+
+TEST(Problem0012, AdditionalCaseRepeatedTens) {
+    Solution solution;
+
+    auto num = 39;
+
+    auto result = "XXXIX"s;
 
     EXPECT_EQ(solution.intToRoman(num), result);
 }
