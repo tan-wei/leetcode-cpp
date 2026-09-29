@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-15 18:49:15
- * Last Modified Date: 2026-09-15 20:24:41
+ * Last Modified Date: 2026-09-29 15:52:53
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -179,6 +179,39 @@ TEST(Problem0016, AdditionalCaseExactMatchTarget) {
     auto target = 0;
 
     auto result = 0;
+
+    EXPECT_EQ(solution.threeSumClosest(nums, target), result);
+}
+
+TEST(Problem0016, AdditionalCaseFirstTripleMatchesTarget) {
+    Solution solution;
+
+    vector<int> nums = {-1, 0, 1, 2};
+    auto target = 0;
+
+    auto result = target;
+
+    EXPECT_EQ(solution.threeSumClosest(nums, target), result);
+}
+
+TEST(Problem0016, AdditionalCaseInitialTripleMatchesTarget) {
+    Solution solution;
+
+    vector<int> nums = {-2, 0, 2, 4};
+    auto target = 2;
+
+    auto result = target;
+
+    EXPECT_EQ(solution.threeSumClosest(nums, target), result);
+}
+
+TEST(Problem0016, AdditionalCaseCloserCandidateAboveTarget) {
+    Solution solution;
+
+    vector<int> nums = {-10, 0, 5, 100};
+    auto target = 94;
+
+    auto result = 95;
 
     EXPECT_EQ(solution.threeSumClosest(nums, target), result);
 }
