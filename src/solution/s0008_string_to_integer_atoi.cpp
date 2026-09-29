@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-07 19:38:08
- * Last Modified Date: 2026-09-07 19:48:39
+ * Last Modified Date: 2026-09-29 15:14:00
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -195,6 +195,46 @@ TEST(Problem0008, Example5) {
     auto s = "words and 987"s;
 
     auto result = 0;
+
+    EXPECT_EQ(solution.myAtoi(s), result);
+}
+
+TEST(Problem0008, AdditionalCaseEmptyString) {
+    Solution solution;
+
+    auto s = ""s;
+
+    auto result = 0;
+
+    EXPECT_EQ(solution.myAtoi(s), result);
+}
+
+TEST(Problem0008, AdditionalCaseSignWithoutDigits) {
+    Solution solution;
+
+    auto s = "+"s;
+
+    auto result = 0;
+
+    EXPECT_EQ(solution.myAtoi(s), result);
+}
+
+TEST(Problem0008, AdditionalCasePositiveOverflow) {
+    Solution solution;
+
+    auto s = "2147483648"s;
+
+    auto result = numeric_limits<int>::max();
+
+    EXPECT_EQ(solution.myAtoi(s), result);
+}
+
+TEST(Problem0008, AdditionalCaseNegativeOverflow) {
+    Solution solution;
+
+    auto s = "-2147483649"s;
+
+    auto result = numeric_limits<int>::min();
 
     EXPECT_EQ(solution.myAtoi(s), result);
 }
