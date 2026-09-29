@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-12 23:11:52
- * Last Modified Date: 2026-09-12 23:32:29
+ * Last Modified Date: 2026-09-29 15:50:47
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -147,6 +147,26 @@ TEST(Problem0013, Example3) {
     auto s = "MCMXCIV"s;
 
     auto result = 1'994;
+
+    EXPECT_EQ(solution.romanToInt(s), result);
+}
+
+TEST(Problem0013, AdditionalCaseSubtractiveForms) {
+    Solution solution;
+
+    auto s = "CDXLIX"s;
+
+    auto result = 449;
+
+    EXPECT_EQ(solution.romanToInt(s), result);
+}
+
+TEST(Problem0013, AdditionalCaseStandaloneSymbols) {
+    Solution solution;
+
+    auto s = "DCXXI"s;
+
+    auto result = 621;
 
     EXPECT_EQ(solution.romanToInt(s), result);
 }
