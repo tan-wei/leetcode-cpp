@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-20 08:21:38
- * Last Modified Date: 2026-09-22 09:30:40
+ * Last Modified Date: 2026-09-29 16:21:10
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -145,13 +145,24 @@ TEST(Problem0021, Example3) {
     EXPECT_EQ_LINKED_LIST(solution.mergeTwoLists(list1, list2), result);
 }
 
-TEST(Problem0021, AddtionalCase1) {
+TEST(Problem0021, AddtionalCaseEmptyOne) {
     Solution solution;
 
     auto list1 = util::to_linked_list("[0]");
     auto list2 = util::to_linked_list("[]");
 
     auto result = util::to_linked_list("[0]");
+
+    EXPECT_EQ_LINKED_LIST(solution.mergeTwoLists(list1, list2), result);
+}
+
+TEST(Problem0021, AdditionalCaseSecondListHasRemainingNodes) {
+    Solution solution;
+
+    auto list1 = util::to_linked_list("[1]");
+    auto list2 = util::to_linked_list("[2,3]");
+
+    auto result = util::to_linked_list("[1,2,3]");
 
     EXPECT_EQ_LINKED_LIST(solution.mergeTwoLists(list1, list2), result);
 }
