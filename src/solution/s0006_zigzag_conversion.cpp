@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-05 15:25:47
- * Last Modified Date: 2026-09-05 16:21:51
+ * Last Modified Date: 2026-09-29 14:52:50
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -92,6 +92,28 @@ TEST(Problem0006, Example1) {
     auto numRows = 3;
 
     auto result = "PAHNAPLSIIGYIR"s;
+
+    EXPECT_EQ(solution.convert(s, numRows), result);
+}
+
+TEST(Problem0006, Example2) {
+    Solution solution;
+
+    auto s = "PAYPALISHIRING"s;
+    auto numRows = 4;
+
+    auto result = "PINALSIGYAHRPI"s;
+
+    EXPECT_EQ(solution.convert(s, numRows), result);
+}
+
+TEST(Problem0006, AdditionalCaseSingleRow) {
+    Solution solution;
+
+    auto s = "PAYPALISHIRING"s;
+    auto numRows = 1;
+
+    auto result = "PAYPALISHIRING"s;
 
     EXPECT_EQ(solution.convert(s, numRows), result);
 }
