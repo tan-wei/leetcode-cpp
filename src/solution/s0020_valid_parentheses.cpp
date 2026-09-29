@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-19 09:13:39
- * Last Modified Date: 2026-09-19 10:47:02
+ * Last Modified Date: 2026-09-29 15:56:41
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -137,6 +137,16 @@ TEST(Problem0020, Example5) {
     Solution solution;
 
     auto s = "([)]"s;
+
+    auto result = false;
+
+    EXPECT_EQ(solution.isValid(s), result);
+}
+
+TEST(Problem0020, AdditionalCaseUnexpectedClosingBrace) {
+    Solution solution;
+
+    auto s = "}"s;
 
     auto result = false;
 
