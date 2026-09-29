@@ -245,6 +245,8 @@ jobs:
   build_windows:
     name: ${{ matrix.config.name }} ${{ matrix.build.type }}
     runs-on: windows-2025
+    env:
+      GTEST_DISCOVERY_TIMEOUT: 60
     strategy:
       matrix:
         build:

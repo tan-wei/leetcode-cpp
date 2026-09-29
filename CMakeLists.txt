@@ -74,7 +74,16 @@ if(NOT CMAKE_CROSSCOMPILING AND BUILD_TESTING)
     # as a separate test (gtest_discover_tests requires the GoogleTest CMake
     # module)
     include(GoogleTest)
-    gtest_discover_tests(leetcode_tests)
+    set(gtest_discovery_timeout 5)
+    if(DEFINED ENV{GTEST_DISCOVERY_TIMEOUT}
+       AND NOT "$ENV{GTEST_DISCOVERY_TIMEOUT}" STREQUAL "")
+      set(gtest_discovery_timeout "$ENV{GTEST_DISCOVERY_TIMEOUT}")
+    endif()
+    if(NOT gtest_discovery_timeout MATCHES "^[1-9][0-9]*$")
+      message(FATAL_ERROR "GTEST_DISCOVERY_TIMEOUT must be a positive integer")
+    endif()
+    gtest_discover_tests(leetcode_tests DISCOVERY_TIMEOUT
+                         "${gtest_discovery_timeout}")
   else()
     message(
       WARNING
