@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-02 21:33:13
- * Last Modified Date: 2026-09-03 19:32:06
+ * Last Modified Date: 2026-09-29 14:45:16
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -111,6 +111,26 @@ TEST(Problem0003, Example3) {
     auto s = "pwwkew"s;
 
     auto result = 3;
+
+    EXPECT_EQ(solution.lengthOfLongestSubstring(s), result);
+}
+
+TEST(Problem0003, AdditionalCaseRepeatedCharacterOutsideWindow) {
+    Solution solution;
+
+    auto s = "abba"s;
+
+    auto result = 2;
+
+    EXPECT_EQ(solution.lengthOfLongestSubstring(s), result);
+}
+
+TEST(Problem0003, AdditionalCaseLongestAfterWindowReset) {
+    Solution solution;
+
+    auto s = "abccdea"s;
+
+    auto result = 4;
 
     EXPECT_EQ(solution.lengthOfLongestSubstring(s), result);
 }
