@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-02-13 11:24:19
- * Last Modified Date: 2026-02-23 10:27:47
+ * Last Modified Date: 2026-09-29 14:42:05
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -93,6 +93,16 @@ TEST(Problem0001, Example3) {
     vector<int> nums = {3, 3};
     int target = 6;
     vector<int> result = {0, 1};
+
+    ASSERT_EQ(solution.twoSum(nums, target), result);
+}
+
+TEST(Problem0001, AdditionalCaseInvalidInput) {
+    Solution solution;
+
+    vector<int> nums = {};
+    int target = 0;
+    vector<int> result = {};
 
     ASSERT_EQ(solution.twoSum(nums, target), result);
 }
