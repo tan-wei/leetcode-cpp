@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-10-04 12:08:31
- * Last Modified Date: 2026-10-04 21:38:13
+ * Last Modified Date: 2026-10-04 21:43:56
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -36,6 +36,8 @@
 // problem: https://leetcode.com/problems/search-insert-position/
 // discuss: https://leetcode.com/problems/search-insert-position/discuss/
 
+#include <algorithm>
+#include <iterator>
 #include <vector>
 
 using namespace std;
