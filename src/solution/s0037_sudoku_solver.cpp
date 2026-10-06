@@ -53,7 +53,7 @@
 // discuss: https://leetcode.com/problems/sudoku-solver/discuss/
 
 #include <array>
-#include <bitmap>
+#include <bitset>
 #include <vector>
 
 using namespace std;
