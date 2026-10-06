@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-10-06 19:31:13
- * Last Modified Date: 2026-10-06 19:59:46
+ * Last Modified Date: 2026-10-06 20:01:34
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -52,6 +52,8 @@
 // problem: https://leetcode.com/problems/sudoku-solver/
 // discuss: https://leetcode.com/problems/sudoku-solver/discuss/
 
+#include <array>
+#include <bitmap>
 #include <vector>
 
 using namespace std;
