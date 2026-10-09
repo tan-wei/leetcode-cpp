@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-10-09 20:57:38
- * Last Modified Date: 2026-10-09 21:13:33
+ * Last Modified Date: 2026-10-09 22:27:56
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -73,7 +73,7 @@ private:
         for (int i = 0; i <= 1; i++) {
             int remains = target - elem * i;
             if (remains == 0) {
-                vector<int> dup_n(i, elem);
+                vector<int> dup_n(statica_cast<int>(i), elem);
                 result.push_back(dup_n);
             } else if (remains > 0) {
                 vector<vector<int>> try_result =
