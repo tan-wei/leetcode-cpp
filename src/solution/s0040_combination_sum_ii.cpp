@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-10-09 20:57:38
- * Last Modified Date: 2026-10-09 22:27:56
+ * Last Modified Date: 2026-10-09 22:59:57
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -52,45 +52,33 @@ using namespace std;
 class Solution {
 public:
     vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
-        vector<vector<int>> result;
         sort(candidates.begin(), candidates.end());
-        result = combinationSumInSubArray2(
-            candidates, target, candidates.size() - 1);
-        sort(result.begin(), result.end());
-        result.erase(unique(result.begin(), result.end()), result.end());
+        vector<vector<int>> result;
+        vector<int> ds;
+        combinationSum2DfsHelper(0, target, candidates, result, ds);
         return result;
     }
 
 private:
-    vector<vector<int>> combinationSumInSubArray2(vector<int>& candidates,
-                                                  int target, int n) {
-        vector<vector<int>> result;
-        if (n <= -1) {
-            return result;
+    void combinationSum2DfsHelper(int ind, int target, vector<int>& candidate,
+                                  vector<vector<int>>& result,
+                                  vector<int>& ds) {
+        if (target == 0) {
+            result.push_back(ds);
+            return;
         }
-
-        int elem = candidates[n];
-        for (int i = 0; i <= 1; i++) {
-            int remains = target - elem * i;
-            if (remains == 0) {
-                vector<int> dup_n(statica_cast<int>(i), elem);
-                result.push_back(dup_n);
-            } else if (remains > 0) {
-                vector<vector<int>> try_result =
-                    combinationSumInSubArray2(candidates, remains, n - 1);
-                if (!try_result.empty()) {
-                    for (auto v : try_result) {
-                        for (int j = 0; j < i; j++) {
-                            v.push_back(elem);
-                        }
-                        result.push_back(v);
-                    }
-                }
-            } else {
+        for (int i = ind; i < candidate.size(); i++) {
+            if (i > ind && candidate[i] == candidate[i - 1]) {
+                continue;
+            }
+            if (candidate[i] > target) {
                 break;
             }
+            ds.push_back(candidate[i]);
+            combinationSum2DfsHelper(
+                i + 1, target - candidate[i], candidate, result, ds);
+            ds.pop_back();
         }
-        return result;
     }
 };
 
