@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-09-15 18:49:15
- * Last Modified Date: 2026-09-29 15:52:53
+ * Last Modified Date: 2026-10-11 13:36:49
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -35,6 +35,7 @@
 // discuss: https://leetcode.com/problems/3sum-closest/discuss/
 
 #include <algorithm>
+#include <cmath>
 #include <limits>
 #include <numeric>
 #include <vector>
