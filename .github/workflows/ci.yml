@@ -19,7 +19,7 @@ env:
 jobs:
   build_linux:
     name: ${{ matrix.config.name }} ${{ matrix.build.type }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     strategy:
       matrix:
         build:
@@ -34,17 +34,17 @@ jobs:
         config:
           - {
               name: 'Linux GCC',
-              cc: gcc-14,
-              cxx: g++-14,
-              gcov: gcov-14,
-              profiles: '-pr:h conan/gcc14'
+              cc: gcc-15,
+              cxx: g++-15,
+              gcov: gcov-15,
+              profiles: '-pr:h conan/gcc15'
             }
           - {
               name: 'Linux Clang',
-              cc: clang-18,
-              cxx: clang++-18,
-              gcov: llvm-cov-18 gcov,
-              profiles: '-pr:h conan/clang18 -pr:h conan/libc++'
+              cc: clang-22,
+              cxx: clang++-22,
+              gcov: llvm-cov-22 gcov,
+              profiles: '-pr:h conan/clang22 -pr:h conan/libc++'
             }
     steps:
       - name: Checkout repository
@@ -62,8 +62,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt install libc++-18-dev libc++abi-18-dev
-          sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100
+          sudo apt install libc++-22-dev libc++abi-22-dev
+          sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-22 100
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
           brew install cppcheck
           uv sync
@@ -136,7 +136,7 @@ jobs:
 
   build_macos:
     name: ${{ matrix.config.name }} ${{ matrix.build.type }}
-    runs-on: macos-26
+    runs-on: xcode-27
     strategy:
       matrix:
         build:
@@ -151,9 +151,9 @@ jobs:
         config:
           - {
               name: 'Macos Clang',
-              cc: $(brew --prefix llvm@22)/bin/clang,
-              cxx: $(brew --prefix llvm@22)/bin/clang++,
-              profiles: '-pr:h conan/clang22 -pr:h conan/libc++'
+              cc: $(brew --prefix llvm@23)/bin/clang,
+              cxx: $(brew --prefix llvm@23)/bin/clang++,
+              profiles: '-pr:h conan/clang23 -pr:h conan/libc++'
             }
     steps:
       - name: Checkout repository
@@ -163,14 +163,6 @@ jobs:
         run: |
           echo "CONAN_HOME=${{ runner.temp }}/.conan2" >> ${{ github.env }}
 
-      - name: Force clang to use homebrew libc++
-        run: |
-          mkdir ~/.config/clang
-          echo "-I$(brew --prefix llvm@22)/include" > ~/.config/clang/clang++.cfg
-          echo "-L$(brew --prefix llvm@22)/lib/c++" >> ~/.config/clang/clang++.cfg
-          echo "-L$(brew --prefix llvm@22)/lib/unwind" >> ~/.config/clang/clang++.cfg
-          echo "-lunwind" >> ~/.config/clang/clang++.cfg
-
       - name: Setup uv
         uses: astral-sh/setup-uv@v7
         with:
@@ -178,8 +170,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install llvm@22
-          brew link --overwrite llvm@22
+          brew install llvm@23
           uv sync
           uv run conan profile detect
 
@@ -233,7 +224,7 @@ jobs:
           uv run cmake --build --preset ${{ matrix.build.preset }}
           uv run ctest --preset ${{ matrix.build.preset }}
           mkdir -p coverage
-          uv run gcovr --gcov-executable "$(brew --prefix llvm@22)/bin/llvm-cov gcov"
+          uv run gcovr --gcov-executable "$(brew --prefix llvm@23)/bin/llvm-cov gcov"
 
       - name: Upload coverage to Codecov
         if: matrix.build.type == 'Debug'
@@ -244,7 +235,7 @@ jobs:
 
   build_windows:
     name: ${{ matrix.config.name }} ${{ matrix.build.type }}
-    runs-on: windows-2025
+    runs-on: windows-2025-vs2026
     env:
       GTEST_DISCOVERY_TIMEOUT: 60
     strategy:
@@ -269,7 +260,7 @@ jobs:
           #     name: 'Windows Clang',
           #     cc: clang-cl,
           #     cxx: clang-cl,
-          #     profiles: '-pr:h conan/msvc195-clang-cl'
+          #     profiles: '-pr:h conan/clang20'
           #   }
     steps:
       - name: Checkout repository
@@ -351,7 +342,7 @@ jobs:
 
   codeql:
     name: CodeQL
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     strategy:
       matrix:
         build:
@@ -361,9 +352,9 @@ jobs:
             }
         config:
           - {
-              cc: gcc-14,
-              cxx: g++-14,
-              profiles: '-pr:h conan/gcc14'
+              cc: gcc-15,
+              cxx: g++-15,
+              profiles: '-pr:h conan/gcc15'
             }
     steps:
       - name: Checkout repository
@@ -417,7 +408,7 @@ jobs:
 
   analyze:
     name: Analyze
-    runs-on: windows-2025
+    runs-on: windows-2025-vs2026
     strategy:
       matrix:
         build:

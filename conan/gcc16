@@ -2,4 +2,4 @@ include(cppstd)
 
 [settings]
 compiler=gcc
-compiler.version=14
+compiler.version=16

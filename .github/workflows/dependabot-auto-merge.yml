@@ -24,7 +24,7 @@ env:
 jobs:
   merge:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Merge eligible Dependabot pull requests
         uses: actions/github-script@v9
