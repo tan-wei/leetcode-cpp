@@ -4,17 +4,23 @@ module.exports = {
     {
       rules: {
         // custom rule: enforce scope formats
-        // - for `retry`: require a result code scope:
-        // WA,TLE,OLE,MLE,RE,PE,CE,CREDIT (e.g. retry(WA))
-        // - for `solve` and `skip`: no special validation
+        // - for `retry`: scope = <problem_id>,<result_code> (e.g. retry(0001,WA))
+        // - for `solve` and `skip`: scope = <problem_id> (e.g. solve(0042))
         "scope-format": (parsed) => {
           const t = parsed.type;
           const s = parsed.scope || "";
           if (t === "retry") {
-            const ok = /^(WA|TLE|OLE|MLE|RE|PE|CE|CREDIT)$/.test(s);
+            const ok = /^\d{4},(WA|TLE|OLE|MLE|RE|PE|CE|CREDIT)$/.test(s);
             return [
               ok,
-              "For type 'retry' the scope must be one of WA,TLE,OLE,MLE,RE,PE,CE,CREDIT (e.g. retry(WA))",
+              "For type 'retry' the scope must be '<problem_id>,<result_code>' (e.g. retry(0001,WA)) with code one of WA,TLE,OLE,MLE,RE,PE,CE,CREDIT",
+            ];
+          }
+          if (t === "solve" || t === "skip") {
+            const ok = /^\d{4}$/.test(s);
+            return [
+              ok,
+              "For type '" + t + "' the scope must be a 4-digit problem id (e.g. " + t + "(0042))",
             ];
           }
           return [true];
