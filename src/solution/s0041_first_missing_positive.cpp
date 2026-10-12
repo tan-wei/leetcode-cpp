@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-10-10 14:25:10
- * Last Modified Date: 2026-10-10 14:36:22
+ * Last Modified Date: 2026-10-12 22:19:51
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -95,6 +95,56 @@ TEST(Problem0041, Example3) {
     vector<int> nums = {7, 8, 9, 11, 12};
 
     auto result = 1;
+
+    EXPECT_EQ(solution.firstMissingPositive(nums), result);
+}
+
+TEST(Problem0041, AdditionalCaseSingleElementOne) {
+    Solution solution;
+
+    vector<int> nums = {1};
+
+    auto result = 2;
+
+    EXPECT_EQ(solution.firstMissingPositive(nums), result);
+}
+
+TEST(Problem0041, AdditionalCaseSingleElementNonOne) {
+    Solution solution;
+
+    vector<int> nums = {2};
+
+    auto result = 1;
+
+    EXPECT_EQ(solution.firstMissingPositive(nums), result);
+}
+
+TEST(Problem0041, AdditionalCaseConsecutiveElements) {
+    Solution solution;
+
+    vector<int> nums = {1, 2, 3, 4, 5};
+
+    auto result = 6;
+
+    EXPECT_EQ(solution.firstMissingPositive(nums), result);
+}
+
+TEST(Problem0041, AdditionalCaseAllNegativeOrZero) {
+    Solution solution;
+
+    vector<int> nums = {-1, -2, 0, -5};
+
+    auto result = 1;
+
+    EXPECT_EQ(solution.firstMissingPositive(nums), result);
+}
+
+TEST(Problem0041, AdditionalCaseDuplicateElements) {
+    Solution solution;
+
+    vector<int> nums = {1, 1, 2, 2};
+
+    auto result = 3;
 
     EXPECT_EQ(solution.firstMissingPositive(nums), result);
 }
