@@ -365,7 +365,7 @@ jobs:
           echo "CONAN_HOME=${{ runner.temp }}/.conan2" >> ${{ github.env }}
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4.38.3
+        uses: github/codeql-action/init@v4.39.0
         with:
           languages: cpp
 
@@ -404,7 +404,7 @@ jobs:
         run: uv run cmake --build --preset ${{ matrix.build.preset }}
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v4.38.3
+        uses: github/codeql-action/analyze@v4.39.0
 
   analyze:
     name: Analyze
@@ -471,6 +471,6 @@ jobs:
           ruleset: NativeRecommendedRules.ruleset
 
       - name: Upload SARIF to GitHub
-        uses: github/codeql-action/upload-sarif@v4.38.3
+        uses: github/codeql-action/upload-sarif@v4.39.0
         with:
           sarif_file: ${{ steps.run-analysis.outputs.sarif }}
