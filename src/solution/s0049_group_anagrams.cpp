@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-10-18 09:18:40
- * Last Modified Date: 2026-10-18 19:04:23
+ * Last Modified Date: 2026-10-26 13:11:51
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -74,10 +74,9 @@ public:
 #include <gmock/gmock-matchers.h>
 #include <gtest/gtest.h>
 
-TEST(Problem0049, Example1) {
-    GTEST_SKIP()
-        << "This test case is skipped because the order of the output is not guaranteed. Let us find a better way to test this case.";
+#include <tuple>
 
+TEST(Problem0049, Example1) {
     Solution solution;
 
     vector<string> strs = {"eat", "tea", "tan", "ate", "nat", "bat"};
@@ -85,36 +84,48 @@ TEST(Problem0049, Example1) {
     vector<vector<string>> result = {
         {"bat"}, {"nat", "tan"}, {"ate", "eat", "tea"}};
 
-    EXPECT_THAT(solution.groupAnagrams(strs),
-                ::testing::UnorderedElementsAreArray(result));
+    EXPECT_THAT(
+        solution.groupAnagrams(strs),
+        ::testing::UnorderedPointwise(
+            ::testing::Truly([](const auto& groups) {
+                return ::testing::Matches(::testing::UnorderedElementsAreArray(
+                    std::get<1>(groups)))(std::get<0>(groups));
+            }),
+            result));
 }
 
 TEST(Problem0049, Example2) {
-    GTEST_SKIP()
-        << "This test case is skipped because the order of the output is not guaranteed. Let us find a better way to test this case.";
-
     Solution solution;
 
     vector<string> strs = {""};
 
     vector<vector<string>> result = {{""}};
 
-    EXPECT_THAT(solution.groupAnagrams(strs),
-                ::testing::UnorderedElementsAreArray(result));
+    EXPECT_THAT(
+        solution.groupAnagrams(strs),
+        ::testing::UnorderedPointwise(
+            ::testing::Truly([](const auto& groups) {
+                return ::testing::Matches(::testing::UnorderedElementsAreArray(
+                    std::get<1>(groups)))(std::get<0>(groups));
+            }),
+            result));
 }
 
 TEST(Problem0049, Example3) {
-    GTEST_SKIP()
-        << "This test case is skipped because the order of the output is not guaranteed. Let us find a better way to test this case.";
-
     Solution solution;
 
     vector<string> strs = {"a"};
 
     vector<vector<string>> result = {{"a"}};
 
-    EXPECT_THAT(solution.groupAnagrams(strs),
-                ::testing::UnorderedElementsAreArray(result));
+    EXPECT_THAT(
+        solution.groupAnagrams(strs),
+        ::testing::UnorderedPointwise(
+            ::testing::Truly([](const auto& groups) {
+                return ::testing::Matches(::testing::UnorderedElementsAreArray(
+                    std::get<1>(groups)))(std::get<0>(groups));
+            }),
+            result));
 }
 
 #endif
