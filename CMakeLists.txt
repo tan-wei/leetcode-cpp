@@ -7,6 +7,12 @@ project(
   HOMEPAGE_URL https://github.com/tan-wei/leetcode-cpp
   LANGUAGES CXX)
 
+if(COMMAND cmake_diagnostic)
+  cmake_diagnostic(SET CMD_DEPRECATED SEND_ERROR)
+else()
+  set(CMAKE_ERROR_DEPRECATED ON)
+endif()
+
 include(cmake/defaults.cmake)
 include(FindThreads)
 include(CTest)
