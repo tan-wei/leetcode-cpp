@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-10-26 18:56:48
- * Last Modified Date: 2026-10-26 21:24:55
+ * Last Modified Date: 2026-10-27 09:22:04
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -53,23 +53,26 @@ class Solution {
 public:
     vector<vector<int>> insert(vector<vector<int>>& intervals,
                                vector<int>& newInterval) {
-        vector<vector<int>> result;
-        int i = 0;
-        int n = intervals.size();
+        if (intervals.empty()) {
+            return {newInterval};
+        }
 
-        while (i < n && intervals[i][1] < newInterval[0]) {
+        vector<vector<int>> result;
+        vector<vector<int>>::size_type i = 0;
+
+        while (i < intervals.size() && intervals[i][1] < newInterval[0]) {
             result.push_back(intervals[i]);
             ++i;
         }
 
-        while (i < n && intervals[i][0] <= newInterval[1]) {
+        while (i < intervals.size() && intervals[i][0] <= newInterval[1]) {
             newInterval[0] = min(newInterval[0], intervals[i][0]);
             newInterval[1] = max(newInterval[1], intervals[i][1]);
             i++;
         }
         result.push_back(newInterval);
 
-        while (i < n) {
+        while (i < intervals.size()) {
             result.push_back(intervals[i]);
             i++;
         }
