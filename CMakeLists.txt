@@ -76,6 +76,18 @@ if(NOT CMAKE_CROSSCOMPILING AND BUILD_TESTING)
     target_compile_definitions(leetcode_tests PRIVATE ENABLE_GTEST=1)
     target_link_libraries(leetcode_tests PRIVATE GTest::gmock_main
                                                  CURL::libcurl options)
+    foreach(solution_source IN LISTS SOLUTION_SRC)
+      get_filename_component(solution_name "${solution_source}" NAME_WE)
+      if(solution_name MATCHES "^(s[0-9]+)_")
+        set(solution_target "leetcode_test_${CMAKE_MATCH_1}")
+        add_executable(${solution_target} EXCLUDE_FROM_ALL "${solution_source}")
+        target_include_directories(${solution_target}
+                                   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+        target_compile_definitions(${solution_target} PRIVATE ENABLE_GTEST=1)
+        target_link_libraries(${solution_target} PRIVATE GTest::gmock_main
+                                                         CURL::libcurl options)
+      endif()
+    endforeach()
     # Register individual GoogleTest cases with CTest so each gtest is reported
     # as a separate test (gtest_discover_tests requires the GoogleTest CMake
     # module)

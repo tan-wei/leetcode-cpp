@@ -18,6 +18,21 @@ We use `just` to make it easy to install, run and test:
   8. `just coverage`: Configure with coverage enabled, build, test, and write reports under `coverage/`
   9. `just clean-all`: Remove all generated files
 
+Pass a problem id to work on one solution without building or running the others:
+
+```sh
+just build 57
+just test 57
+just coverage 57
+```
+
+Both `57` and `0057` select `src/solution/s0057_*.cpp`. Run `just configure`
+once after updating the build configuration. Single-solution tests build their
+own executable before running. Single-solution coverage reports are written to
+`coverage/0057/` without processing other solutions' coverage data. Enabling
+coverage changes compiler flags, so a later full build may rebuild other targets.
+Omit the id to keep the existing whole-project behavior.
+
 
 ## Commit Message Convention
 

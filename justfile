@@ -68,11 +68,45 @@ configure:
       -D ENABLE_TSAN=OFF
 
 # Build and test
-build:
-    uv run cmake --build --preset {{ preset }}
+build id="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ -z {{ quote(id) }} ]; then
+        uv run cmake --build --preset {{ preset }}
+    else
+        number=$(just _solution-id {{ quote(id) }})
+        uv run cmake --build --preset {{ preset }} --target "leetcode_test_s${number}"
+    fi
 
-test:
-    uv run ctest --preset {{ preset }}
+test id="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ -z {{ quote(id) }} ]; then
+        uv run ctest --preset {{ preset }}
+    else
+        number=$(just _solution-id {{ quote(id) }})
+        just build_type={{ build_type }} preset={{ preset }} build "$number"
+        binary="./build/{{ build_type }}/leetcode_test_s${number}"
+        if [ -f "${binary}.exe" ]; then binary="${binary}.exe"; fi
+        uv run "$binary"
+    fi
+
+_solution-id id:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    id={{ quote(id) }}
+    if [[ ! "$id" =~ ^[0-9]{1,4}$ ]] || (( 10#$id == 0 )); then
+        echo "Invalid problem id: $id (expected 1-9999)" >&2
+        exit 1
+    fi
+    printf -v number '%04d' "$((10#$id))"
+    shopt -s nullglob
+    sources=(src/solution/s"${number}"_*.cpp)
+    if [ "${#sources[@]}" -ne 1 ]; then
+        echo "Expected one solution for $number in src/solution, found ${#sources[@]}" >&2
+        exit 1
+    fi
+    printf '%s\n' "$number"
 
 # Run cppcheck using the generated compile_commands.json (optional: run `just configure` first)
 cppcheck:
@@ -118,27 +152,45 @@ clean-all: clean-setup clean-build
 clean: clean-build
 
 # Configure, build, test, and collect coverage for the current platform.
-coverage:
+coverage id="":
+    @if [ -n {{ quote(id) }} ]; then just _solution-id {{ quote(id) }} >/dev/null; fi
     @just build_type={{ build_type }} preset={{ preset }} enable_cppcheck={{ enable_cppcheck }} enable_clang_tidy={{ enable_clang_tidy }} enable_coverage=True cache_option={{ cache_option }} configure
-    @just build_type={{ build_type }} preset={{ preset }} build
-    @just build_type={{ build_type }} preset={{ preset }} gcov='{{ gcov }}' coverage-report
+    @just build_type={{ build_type }} preset={{ preset }} build {{ quote(id) }}
+    @just build_type={{ build_type }} preset={{ preset }} CXX={{ CXX }} gcov='{{ gcov }}' coverage-report {{ quote(id) }}
 
 # Collect coverage from an already-built coverage configuration.
-coverage-report:
-        mkdir -p coverage
-        if [ "${OS:-}" = "Windows_NT" ]; then \
-            if ! command -v OpenCppCoverage >/dev/null 2>&1; then echo "OpenCppCoverage not found; install it to collect MSVC coverage"; exit 2; fi; \
-            OpenCppCoverage --export_type cobertura:coverage/cobertura.xml --cover_children -- uv run ctest --preset {{ preset }}; \
-        else \
-            selected_gcov='{{ gcov }}'; \
-            if [ "$selected_gcov" = "auto" ] || [ -z "$selected_gcov" ]; then \
-                if [ -n "${GCOV:-}" ]; then selected_gcov="$GCOV"; \
-                elif [[ "{{ CXX }}" == *clang* ]] && command -v llvm-cov >/dev/null 2>&1; then selected_gcov="llvm-cov gcov"; \
-                else selected_gcov="gcov"; fi; \
-            fi; \
-            uv run ctest --preset {{ preset }}; \
-            uv run gcovr --gcov-executable "$selected_gcov"; \
+coverage-report id="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    report_dir=coverage
+    test_command=(uv run ctest --preset {{ preset }})
+    coverage_args=()
+    source_args=()
+    if [ -n {{ quote(id) }} ]; then
+        number=$(just _solution-id {{ quote(id) }})
+        report_dir="coverage/$number"
+        binary="./build/{{ build_type }}/leetcode_test_s${number}"
+        if [ -f "${binary}.exe" ]; then binary="${binary}.exe"; fi
+        test_command=(uv run "$binary")
+        coverage_args=("build/{{ build_type }}/CMakeFiles/leetcode_test_s${number}.dir"
+            --cobertura "$report_dir/cobertura.xml" --html-nested "$report_dir/html"
+            --sonarqube "$report_dir/sonarqube.xml" --coveralls "$report_dir/coveralls.json")
+        source_args=(--sources "*s${number}_*.cpp")
+    fi
+    mkdir -p "$report_dir"
+    if [ "${OS:-}" = "Windows_NT" ]; then
+        if ! command -v OpenCppCoverage >/dev/null 2>&1; then echo "OpenCppCoverage not found; install it to collect MSVC coverage"; exit 2; fi
+        OpenCppCoverage --export_type "cobertura:$report_dir/cobertura.xml" "${source_args[@]}" --cover_children -- "${test_command[@]}"
+    else
+        selected_gcov='{{ gcov }}'
+        if [ "$selected_gcov" = "auto" ] || [ -z "$selected_gcov" ]; then
+            if [ -n "${GCOV:-}" ]; then selected_gcov="$GCOV"
+            elif [[ "{{ CXX }}" == *clang* ]] && command -v llvm-cov >/dev/null 2>&1; then selected_gcov="llvm-cov gcov"
+            else selected_gcov="gcov"; fi
         fi
+        "${test_command[@]}"
+        uv run gcovr --gcov-executable "$selected_gcov" "${coverage_args[@]}"
+    fi
 
 # Format C/C++ sources under src/ using clang-format
 fmt:
