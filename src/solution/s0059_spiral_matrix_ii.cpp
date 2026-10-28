@@ -3,7 +3,7 @@
  * Project           : leetcode-cpp
  * Author            : Wei Tan <tanwei.winterreise@gmail.com>
  * Date              : 2026-10-28 20:13:56
- * Last Modified Date: 2026-10-28 20:41:26
+ * Last Modified Date: 2026-10-28 20:48:43
  * Last Modified By  : Wei Tan <tanwei.winterreise@gmail.com>
  */
 
@@ -39,8 +39,8 @@ public:
     vector<vector<int>> generateMatrix(int n) {
         // 4 barrier
         int right = n - 1;
-        int down = n - 1;
         int left = 0;
+        int down = n - 1;
         int up = 0;
 
         int cur = 0;
