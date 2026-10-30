@@ -109,10 +109,24 @@ _solution-id id:
     printf '%s\n' "$number"
 
 # Run cppcheck using the generated compile_commands.json (optional: run `just configure` first)
-cppcheck:
-    @command -v cppcheck >/dev/null 2>&1 || { echo "cppcheck not found; install it (brew/apt)"; exit 2; }
-    # Use compile_commands.json so cppcheck picks up include paths from CMake/Conan
-    COMPILE_COMMANDS_PATH=build/{{ build_type }}/compile_commands.json; if [ ! -f "$COMPILE_COMMANDS_PATH" ]; then echo "compile_commands.json not found; run 'just configure' first"; exit 1; fi; cppcheck --project="$COMPILE_COMMANDS_PATH" -v --enable=all --check-level=exhaustive --inline-suppr --suppressions-list=cppcheck.suppressions || true
+cppcheck id="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    command -v cppcheck >/dev/null 2>&1 || { echo "cppcheck not found; install it (brew/apt)"; exit 2; }
+    set --
+    if [ -n {{ quote(id) }} ]; then
+        number=$(just _solution-id {{ quote(id) }})
+        set -- "--file-filter=*/s${number}_*.cpp"
+    fi
+    COMPILE_COMMANDS_PATH="build/{{ build_type }}/compile_commands.json"
+    if [ ! -f "$COMPILE_COMMANDS_PATH" ]; then
+        echo "compile_commands.json not found; run 'just configure' first"
+        exit 1
+    fi
+    cppcheck --project="$COMPILE_COMMANDS_PATH" "$@" -v --enable=all --check-level=exhaustive --inline-suppr --suppressions-list=cppcheck.suppressions --error-exitcode=1
+
+# Run local pre-push checks, stopping at the first failure
+ci id="": (build id) (test id) (cppcheck id)
 
 # Run the compiled leetcode_cpp executable. Depends on `build` so the binary
 # is up-to-date. Override `run_binary` or `build_type` locally if needed.

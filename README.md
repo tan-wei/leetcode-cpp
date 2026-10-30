@@ -17,6 +17,7 @@ We use `just` to make it easy to install, run and test:
   7. `just cppcheck`: Run cppcheck
   8. `just coverage`: Configure with coverage enabled, build, test, and write reports under `coverage/`
   9. `just clean-all`: Remove all generated files
+  10. `just ci`: Build, run tests, and run cppcheck in order; stop on failure
 
 Pass a problem id to work on one solution without building or running the others:
 
@@ -24,14 +25,23 @@ Pass a problem id to work on one solution without building or running the others
 just build 57
 just test 57
 just coverage 57
+just cppcheck 57
+just ci 57
 ```
 
 Both `57` and `0057` select `src/solution/s0057_*.cpp`. Run `just configure`
 once after updating the build configuration. Single-solution tests build their
-own executable before running. Single-solution coverage reports are written to
+own executable before running. Single-solution cppcheck uses the compilation
+database with a file filter to analyze only the selected solution.
+Single-solution coverage reports are written to
 `coverage/0057/` without processing other solutions' coverage data. Enabling
 coverage changes compiler flags, so a later full build may rebuild other targets.
 Omit the id to keep the existing whole-project behavior.
+
+Run `just configure` before the first `just ci`. Both `just ci` and
+`just cppcheck` return a nonzero exit code when cppcheck reports unsuppressed
+findings. These local checks do not replace the remote CI's platform matrix
+or other checks.
 
 
 ## Commit Message Convention
