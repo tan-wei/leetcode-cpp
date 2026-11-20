@@ -61,37 +61,28 @@ endif()
 
 # put unit tests that run on your pc here
 if(NOT CMAKE_CROSSCOMPILING AND BUILD_TESTING)
-  # Tests target: compile all src/solution/*.cpp into a test executable and link
-  # gtest Use CONFIGURE_DEPENDS so CMake will re-run configure when files are
-  # added/removed
+  # One executable per solution.
+  #
+  # Every solution file declares its own `class Solution` whose members are
+  # defined inside the class, i.e. they are implicitly `inline` and therefore
+  # emitted as weak symbols. Linking several solutions into a single executable
+  # makes the linker keep only the first definition of a duplicated member name
+  # (e.g. `Solution::removeDuplicates` in s0026 and s0080, `Solution::isMatch`
+  # in s0010 and s0044), so the "winning" test silently runs another problem's
+  # implementation. That only shows up in -O0 builds, where the call is not
+  # inlined, which is why Debug and Release disagreed.
+  #
+  # Compiling each solution into its own executable keeps every `Solution` in a
+  # separate link unit, which is also how LeetCode builds a submission, so the
+  # problem cannot occur regardless of how member functions are named.
   enable_testing()
   file(GLOB_RECURSE SOLUTION_SRC CONFIGURE_DEPENDS
        "${CMAKE_CURRENT_SOURCE_DIR}/src/solution/*.cpp")
   if(SOLUTION_SRC)
     # Ensure GTest is available (from Conan or system)
     find_package(GTest REQUIRED)
-    add_executable(leetcode_tests ${SOLUTION_SRC})
-    target_include_directories(leetcode_tests
-                               PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-    target_compile_definitions(leetcode_tests PRIVATE ENABLE_GTEST=1)
-    target_link_libraries(leetcode_tests PRIVATE GTest::gmock_main
-                                                 CURL::libcurl options)
-    foreach(solution_source IN LISTS SOLUTION_SRC)
-      get_filename_component(solution_name "${solution_source}" NAME_WE)
-      if(solution_name MATCHES "^(s[0-9]+)_")
-        set(solution_target "leetcode_test_${CMAKE_MATCH_1}")
-        add_executable(${solution_target} EXCLUDE_FROM_ALL "${solution_source}")
-        target_include_directories(${solution_target}
-                                   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-        target_compile_definitions(${solution_target} PRIVATE ENABLE_GTEST=1)
-        target_link_libraries(${solution_target} PRIVATE GTest::gmock_main
-                                                         CURL::libcurl options)
-      endif()
-    endforeach()
-    # Register individual GoogleTest cases with CTest so each gtest is reported
-    # as a separate test (gtest_discover_tests requires the GoogleTest CMake
-    # module)
     include(GoogleTest)
+
     set(gtest_discovery_timeout 5)
     if(DEFINED ENV{GTEST_DISCOVERY_TIMEOUT}
        AND NOT "$ENV{GTEST_DISCOVERY_TIMEOUT}" STREQUAL "")
@@ -100,13 +91,27 @@ if(NOT CMAKE_CROSSCOMPILING AND BUILD_TESTING)
     if(NOT gtest_discovery_timeout MATCHES "^[1-9][0-9]*$")
       message(FATAL_ERROR "GTEST_DISCOVERY_TIMEOUT must be a positive integer")
     endif()
-    gtest_discover_tests(leetcode_tests DISCOVERY_TIMEOUT
-                         "${gtest_discovery_timeout}")
+
+    foreach(solution_source IN LISTS SOLUTION_SRC)
+      get_filename_component(solution_name "${solution_source}" NAME_WE)
+      if(NOT solution_name MATCHES "^(s[0-9]+)_")
+        continue()
+      endif()
+      set(solution_target "leetcode_test_${CMAKE_MATCH_1}")
+      add_executable(${solution_target} "${solution_source}")
+      target_include_directories(${solution_target}
+                                 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+      target_compile_definitions(${solution_target} PRIVATE ENABLE_GTEST=1)
+      target_link_libraries(${solution_target} PRIVATE GTest::gmock_main
+                                                       CURL::libcurl options)
+      # Register every GoogleTest case as its own CTest test. PRE_TEST defers
+      # discovery to test time, so `cmake --build` stays free of extra process
+      # launches.
+      gtest_discover_tests(${solution_target} DISCOVERY_TIMEOUT
+                           "${gtest_discovery_timeout}" DISCOVERY_MODE PRE_TEST)
+    endforeach()
   else()
-    message(
-      WARNING
-        "No solution sources found in src/solution; skipping leetcode_tests target"
-    )
+    message(WARNING "No solution sources found in src/solution; skipping tests")
   endif()
 
   # Optional: build and run a single solution via -DSOLUTION=<filename without
